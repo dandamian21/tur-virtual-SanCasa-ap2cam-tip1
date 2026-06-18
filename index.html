@@ -116,7 +116,7 @@
 
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v15</div>
+  <div id="version">v16</div>
   <div id="pano-title">Hol-01</div>
   <div id="info-bar"></div>
   <div id="crosshair"><svg width="44" height="44"><circle cx="22" cy="22" r="20" fill="none" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="22" y1="8" x2="22" y2="36" stroke="#f0a500" stroke-width="1.5"/><line x1="8" y1="22" x2="36" y2="22" stroke="#f0a500" stroke-width="1.5"/></svg></div>
@@ -387,7 +387,15 @@ function onPlaceClick(e) {
 
 // ===== MUTARE HOTSPOT =====
 function startMove() {
-  closeHSModal();
+  // Salveaza datele din modal inainte de a-l inchide
+  if(pendingHS) {
+    pendingHS.target = document.getElementById('hs-sel').value;
+    pendingHS.type = document.getElementById('tb-c').classList.contains('sel') ? 'circle' : 'arrow';
+    pendingHS.size = +document.getElementById('sl-sz').value;
+    pendingHS.opacity = +document.getElementById('sl-op').value;
+  }
+  // Inchide modal fara a sterge pendingHS si editIdx
+  document.getElementById('hs-bg').classList.remove('open');
   movingHS=true;
   infoBar('📍 Click pe noua poziție pentru hotspot','blue');
   document.getElementById('crosshair').classList.add('visible');
@@ -396,24 +404,24 @@ function startMove() {
 }
 
 function onMoveClick(e) {
-  if(e.target.closest('.pnlm-hotspot-base')) return;
+  if(!movingHS) return;
   const wrap=document.getElementById('viewer-wrap');
   const r=wrap.getBoundingClientRect();
   const xf=(e.clientX-r.left)/r.width;
   const yf=(e.clientY-r.top)/r.height;
   const hfov=viewer.getHfov();
   const vfov=hfov*(r.height/r.width);
-  pendingHS.pitch=viewer.getPitch()-(yf-0.5)*vfov;
-  pendingHS.yaw=viewer.getYaw()+(xf-0.5)*hfov;
+  if(pendingHS) {
+    pendingHS.pitch=viewer.getPitch()-(yf-0.5)*vfov;
+    pendingHS.yaw=viewer.getYaw()+(xf-0.5)*hfov;
+    if(editIdx!==null) HS[activeScene][editIdx]={...pendingHS};
+  }
   movingHS=false;
   infoBar(null);
   document.getElementById('crosshair').classList.remove('visible');
   document.getElementById('viewer-wrap').style.cursor='';
   document.getElementById('viewer-wrap').removeEventListener('click',onMoveClick);
-  // Aplica si salveaza
-  if(editIdx!==null) {
-    HS[activeScene][editIdx]={...pendingHS};
-  }
+  pendingHS=null; editIdx=null;
   saveAll();
   initViewer(activeScene);
   toast('✅ Hotspot mutat!');
@@ -456,12 +464,16 @@ function slUpd() {
 
 function confirmHS() {
   if(!pendingHS) return;
-  pendingHS.target=document.getElementById('hs-sel').value;
+  pendingHS.target = document.getElementById('hs-sel').value;
+  pendingHS.type = document.getElementById('tb-c').classList.contains('sel') ? 'circle' : 'arrow';
+  pendingHS.size = +document.getElementById('sl-sz').value;
+  pendingHS.opacity = +document.getElementById('sl-op').value;
   if(editIdx!==null) {
     HS[activeScene][editIdx]={...pendingHS};
   } else {
     HS[activeScene].push({...pendingHS});
   }
+  const savedEditIdx = editIdx;
   closeHSModal();
   saveAll();
   initViewer(activeScene);
