@@ -101,6 +101,7 @@
   <a-entity id="rig" position="0 1.6 0">
     <a-camera
       id="cam"
+      arrow-look-controls
       look-controls="reverseMouseDrag:true;reverseTouchDrag:true;touchEnabled:true;magicWindowTrackingEnabled:true"
       wasd-controls="enabled:false"
       fov="75">
@@ -108,8 +109,9 @@
         fuse="false"
         raycaster="objects:.hotspot-mesh;far:200"
         color="white"
-        opacity="0.8"
-        scale="0.5 0.5 0.5">
+        opacity="0"
+        scale="0.01 0.01 0.01"
+        visible="false">
       </a-cursor>
     </a-camera>
   </a-entity>
@@ -117,7 +119,32 @@
 </a-scene>
 
 <script>
-const panorame = [
+AFRAME.registerComponent('arrow-look-controls', {
+  init: function() {
+    this.keys = {};
+    this.onKeyDown = (e) => { this.keys[e.code] = true; };
+    this.onKeyUp = (e) => { this.keys[e.code] = false; };
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+  },
+  tick: function() {
+    const speed = 0.8;
+    const cam = this.el;
+    const rot = cam.getAttribute('rotation');
+    let {x, y, z} = rot;
+    if(this.keys['ArrowLeft'])  y += speed;
+    if(this.keys['ArrowRight']) y -= speed;
+    if(this.keys['ArrowUp'])    x = Math.min(85,  x + speed);
+    if(this.keys['ArrowDown'])  x = Math.max(-85, x - speed);
+    if(this.keys['ArrowLeft']||this.keys['ArrowRight']||this.keys['ArrowUp']||this.keys['ArrowDown']) {
+      cam.setAttribute('rotation', {x, y, z});
+    }
+  },
+  remove: function() {
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+  }
+});
   {id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  px:47.5,py:62.0,pm:22},
   {id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  px:44.0,py:72.0,pm:22},
   {id:"hol03",  titlu:"Hol-03",       fisier:"03_ap.2cam-Hol-03-Exp-0.5.jpg",  px:50.0,py:72.0,pm:22},
@@ -185,7 +212,8 @@ function renderHotspots() {
     const op=(h.opacity||70)/100;
     const ent=document.createElement('a-entity');
     ent.setAttribute('position',`${pos.x} ${pos.y} ${pos.z}`);
-    ent.setAttribute('look-at','#cam');
+    ent.setAttribute('look-at','[camera]');
+
     if(h.type==='circle') {
       const ring=document.createElement('a-ring');
       ring.setAttribute('radius-inner',sz*0.3);
@@ -195,14 +223,17 @@ function renderHotspots() {
       ring.setAttribute('side','double');
       ring.setAttribute('segments-theta','64');
       ring.classList.add('hotspot-mesh');
-      ring.dataset.target=h.target;
-      const ring2=document.createElement('a-circle');
-      ring2.setAttribute('radius',sz*0.25);
-      ring2.setAttribute('color','white');
-      ring2.setAttribute('opacity',op*0.6);
-      ring2.setAttribute('side','double');
+      ring.setAttribute('data-target',h.target);
+      ring.addEventListener('click',()=>goToScene(h.target));
+      ring.addEventListener('mouseenter',()=>{ ring.setAttribute('color','#f0a500'); });
+      ring.addEventListener('mouseleave',()=>{ ring.setAttribute('color','white'); });
+      const dot=document.createElement('a-circle');
+      dot.setAttribute('radius',sz*0.25);
+      dot.setAttribute('color','white');
+      dot.setAttribute('opacity',op*0.6);
+      dot.setAttribute('side','double');
       ent.appendChild(ring);
-      ent.appendChild(ring2);
+      ent.appendChild(dot);
     } else {
       const cone=document.createElement('a-cone');
       cone.setAttribute('radius-bottom',sz*0.4);
@@ -213,12 +244,12 @@ function renderHotspots() {
       cone.setAttribute('segments-radial','8');
       cone.setAttribute('rotation','-90 0 0');
       cone.classList.add('hotspot-mesh');
-      cone.dataset.target=h.target;
+      cone.setAttribute('data-target',h.target);
+      cone.addEventListener('click',()=>goToScene(h.target));
+      cone.addEventListener('mouseenter',()=>{ cone.setAttribute('color','#f0a500'); });
+      cone.addEventListener('mouseleave',()=>{ cone.setAttribute('color','white'); });
       ent.appendChild(cone);
     }
-    ent.addEventListener('click',()=>goToScene(h.target));
-    ent.addEventListener('mouseenter',()=>ent.querySelectorAll('[color]').forEach(e=>e.setAttribute('color','#f0a500')));
-    ent.addEventListener('mouseleave',()=>ent.querySelectorAll('[color]').forEach(e=>e.setAttribute('color','white')));
     c.appendChild(ent);
   });
 }
@@ -304,6 +335,13 @@ document.getElementById('plan-bg').addEventListener('click',e=>{
 
 // INIT
 loadData();
+
+// Sterge date vechi Pannellum incompatibile (chei diferite)
+// Datele noi folosesc tv2_, cele vechi tv_
+localStorage.removeItem('tur_hotspots');
+localStorage.removeItem('tur_initialView');
+localStorage.removeItem('tur_planPositions');
+
 buildSidebar();
 
 document.getElementById('scene').addEventListener('loaded',()=>{
