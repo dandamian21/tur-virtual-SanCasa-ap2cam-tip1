@@ -137,27 +137,10 @@
   renderer="antialias:true;colorManagement:true"
   device-orientation-permission-ui="enabled:false">
 
-  <a-assets id="assets" timeout="60000">
-    <img id="img-hol01"  src="01_ap.2cam-Hol-01-Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-hol02"  src="02_ap.2cam-Hol-02-Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-hol03"  src="03_ap.2cam-Hol-03-Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-liv01"  src="04_ap.2cam-LIV-01-Exp-0.jpg"    crossorigin="anonymous">
-    <img id="img-liv02"  src="05_ap.2cam-LIV-02-Exp-0.jpg"    crossorigin="anonymous">
-    <img id="img-liv03"  src="06_ap.2cam-LIV-03-Exp-0.jpg"    crossorigin="anonymous">
-    <img id="img-liv04"  src="07_ap.2cam-LIV-04-Exp-0.jpg"    crossorigin="anonymous">
-    <img id="img-ter01"  src="08_ap.2cam-TER-01-Exp-0.jpg"    crossorigin="anonymous">
-    <img id="img-ter02"  src="09_ap.2cam-TER-02-Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-buc01"  src="10_ap.2cam-Buc-01_Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-buc02"  src="11_ap.2cam-Buc-02_Exp-0.5.jpg"  crossorigin="anonymous">
-    <img id="img-dorm01" src="12_ap.2cam-Dorm-01-Exp-0.jpg"   crossorigin="anonymous">
-    <img id="img-dorm02" src="13_ap.2cam-Dorm-02-Exp-0.jpg"   crossorigin="anonymous">
-    <img id="img-baie01" src="14_ap.2cam-Baie-01_Exp 1.jpg"   crossorigin="anonymous">
-    <img id="img-baie02" src="15_ap.2cam-Baie-02_Exp 1.jpg"   crossorigin="anonymous">
-    <img id="img-baie03" src="16_ap.2cam-Baie-03_Exp 1.jpg"   crossorigin="anonymous">
-  </a-assets>
+  <a-assets id="assets" timeout="60000"></a-assets>
 
   <!-- Sky panorama -->
-  <a-sky id="sky" radius="100" segments-height="64" segments-width="64"></a-sky>
+  <a-sky id="sky" radius="100" segments-height="64" segments-width="64" rotation="0 -90 0"></a-sky>
 
   <!-- Hotspot-uri container -->
   <a-entity id="hotspots"></a-entity>
@@ -248,14 +231,17 @@ function goToScene(id) {
   const pano = panorame.find(p => p.id===id);
   if(!pano) return;
 
-  // Foloseste referinta la asset preincarcata
   const sky = document.getElementById('sky');
-  sky.setAttribute('src', '#img-' + id);
+  // Sterge src vechi si seteaza URL direct
+  sky.removeAttribute('src');
+  sky.setAttribute('material', '');
+  setTimeout(() => {
+    sky.setAttribute('src', pano.fisier);
+  }, 50);
 
   // Seteaza initial view
   const iv = IV[id] || {pitch:0, yaw:0};
-  const camEl = document.getElementById('cam');
-  camEl.setAttribute('rotation', `${-iv.pitch} ${-iv.yaw} 0`);
+  document.getElementById('cam').setAttribute('rotation', `${-iv.pitch} ${-iv.yaw} 0`);
 
   activeScene = id;
   document.getElementById('pano-title').textContent = pano.titlu;
