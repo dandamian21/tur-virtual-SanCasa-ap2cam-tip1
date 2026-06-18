@@ -231,16 +231,12 @@ function goToScene(id) {
   const pano = panorame.find(p => p.id===id);
   if(!pano) return;
 
-  // Schimba textura sky
+  // Schimba textura sky direct cu URL
   const sky = document.getElementById('sky');
   sky.setAttribute('src', pano.fisier);
-  sky.setAttribute('phi-start', 0);
 
   // Seteaza initial view
   const iv = IV[id] || {pitch:0, yaw:0};
-  const cam = document.getElementById('rig');
-
-  // Roteste camera la vederea initiala
   const camEl = document.getElementById('cam');
   camEl.setAttribute('rotation', `${-iv.pitch} ${-iv.yaw} 0`);
 
@@ -452,28 +448,26 @@ function renderPlanDots() {
 // ===== INIT =====
 loadData();
 
-// Asteapta A-Frame sa se incarce
-document.getElementById('scene').addEventListener('loaded', () => {
-  // Preincarca toate imaginile in assets
-  const assets = document.getElementById('assets');
-  panorame.forEach(p => {
-    const img = document.createElement('img');
-    img.id = 'img-' + p.id;
-    img.src = p.fisier;
-    img.crossOrigin = 'anonymous';
-    assets.appendChild(img);
-  });
-
+function initApp() {
   buildSidebar();
   goToScene('hol01');
   checkVRDevice();
-
-  // Pe mobil, ascunde sidebar implicit
-  if(window.innerWidth < 600) {
+  if(window.innerWidth < 768) {
     sidebarOpen = false;
     document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('sidebar-toggle').textContent = '▶';
   }
-});
+}
+
+const scene = document.getElementById('scene');
+// Incearca imediat dupa loaded
+scene.addEventListener('loaded', initApp);
+// Fallback dupa 3 secunde daca loaded nu se declanseaza
+setTimeout(() => {
+  if(activeScene === 'hol01' && !document.getElementById('sky').getAttribute('src')) {
+    initApp();
+  }
+}, 3000);
 
 // Click pe plan-bg inchide
 document.getElementById('plan-bg').addEventListener('click', e => {
