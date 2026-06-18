@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Tur Virtual - Apartament 2 camere</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.5.0/aframe.min.js"></script>
+  <script src="aframe.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#000; font-family:'Segoe UI',sans-serif; overflow:hidden; width:100vw; height:100vh; }
@@ -101,7 +101,7 @@
   <a-entity id="rig" position="0 1.6 0">
     <a-camera
       id="cam"
-      look-controls="reverseMouseDrag:false;touchEnabled:true;magicWindowTrackingEnabled:true"
+      look-controls="reverseMouseDrag:true;reverseTouchDrag:true;touchEnabled:true;magicWindowTrackingEnabled:true"
       wasd-controls="enabled:false"
       fov="90">
       <a-cursor
