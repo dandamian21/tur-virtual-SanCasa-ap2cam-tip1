@@ -178,7 +178,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v10</div>
+  <div id="version">v11</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -236,6 +236,7 @@
     <div class="hm-btns">
       <button class="hm-btn cancel" onclick="closeHSModal()">Anulează</button>
       <button class="hm-btn del" id="hs-del" onclick="deleteHS()">🗑️ Șterge</button>
+      <button class="hm-btn repos" id="hs-repos" onclick="repositionHS()" style="display:none;flex:1;padding:10px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700;background:rgba(59,130,246,0.2);color:#3b82f6;border:1px solid #3b82f6;">📍 Mută</button>
       <button class="hm-btn ok" onclick="confirmHS()">✓ Confirmă</button>
     </div>
   </div>
@@ -333,23 +334,19 @@ function attachViewerEvents() {
 }
 attachViewerEvents();
 
-// Navigare cu rebuild pentru a aplica vederea initiala corect
-function goToScene(id) {
-  const iv = initView[id] || {pitch:0, yaw:0, hfov:100};
+function goToScene(id) { rebuildViewer(id); }
+
+function rebuildViewer(id) {
   viewer.destroy();
   document.getElementById('viewer').innerHTML = '';
   viewer = pannellum.viewer('viewer', {
-    default: {
-      firstScene: id, autoLoad:true, showControls:false,
-      mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false
-    },
+    default: { firstScene:id, autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
     scenes: buildScenes()
   });
   attachViewerEvents();
   activeScene = id;
   document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
   updateSidebar();
-  setTimeout(drawHS, 150);
 }
 
 // Opreste zoom
@@ -467,6 +464,7 @@ function openHSModal(isEdit) {
 
   document.getElementById('hs-title').textContent = isEdit?'Editează hotspot':'Hotspot nou';
   document.getElementById('hs-del').style.display = isEdit?'flex':'none';
+  document.getElementById('hs-repos').style.display = isEdit?'flex':'none';
   document.getElementById('tb-circle').classList.toggle('sel', pendingHS.type==='circle');
   document.getElementById('tb-arrow').classList.toggle('sel', pendingHS.type==='arrow');
   document.getElementById('sl-size').value = pendingHS.size||60;
@@ -498,19 +496,67 @@ function openEditHS(idx) {
   openHSModal(true);
 }
 
+function repositionHS() {
+  // Salveaza celelalte proprietati si intra in modul plasare
+  pendingHS.target = document.getElementById('hs-target-sel').value;
+  pendingHS.type = pendingHS.type;
+  pendingHS.size = +document.getElementById('sl-size').value;
+  pendingHS.opacity = +document.getElementById('sl-op').value;
+  closeHSModal();
+  // Intra in modul adaugare cu datele existente
+  addingHS = true;
+  document.getElementById('btn-add-hs').classList.add('active');
+  document.getElementById('add-hs-bar').classList.add('visible');
+  document.getElementById('crosshair').classList.add('visible');
+  document.getElementById('viewer-wrap').style.cursor='crosshair';
+  document.getElementById('viewer-wrap').addEventListener('click', onViewerClickRepos);
+}
+
+function onViewerClickRepos(e) {
+  if(e.target.closest('.pnlm-hs-custom')) return;
+  const wrap = document.getElementById('viewer-wrap');
+  const rect = wrap.getBoundingClientRect();
+  const xf=(e.clientX-rect.left)/rect.width;
+  const yf=(e.clientY-rect.top)/rect.height;
+  const hfov=viewer.getHfov();
+  const vfov=hfov*(rect.height/rect.width);
+  pendingHS.pitch = viewer.getPitch()-(yf-0.5)*vfov;
+  pendingHS.yaw = viewer.getYaw()+(xf-0.5)*hfov;
+  stopAddHS();
+  document.getElementById('viewer-wrap').removeEventListener('click', onViewerClickRepos);
+  // Aplica direct
+  if(editHSIdx!==null) { hotspots[activeScene][editHSIdx]={...pendingHS}; }
+  saveAll();
+  rebuildViewer(activeScene);
+  toast('✅ Hotspot repoziționat!');
+}
+
 function confirmHS() {
   pendingHS.target = document.getElementById('hs-target-sel').value;
   pendingHS.id = pendingHS.id||('hs_'+Date.now());
   if(editHSIdx!==null) { hotspots[activeScene][editHSIdx]={...pendingHS}; }
   else { hotspots[activeScene].push({...pendingHS}); }
   closeHSModal();
-  drawHS();
   saveAll();
+  rebuildViewer(activeScene); // rebuild ca sa apara hotspot-urile
 }
 
 function deleteHS() {
   if(editHSIdx!==null) { hotspots[activeScene].splice(editHSIdx,1); }
-  closeHSModal(); drawHS(); saveAll();
+  closeHSModal(); saveAll(); rebuildViewer(activeScene);
+}
+
+function rebuildViewer(id) {
+  viewer.destroy();
+  document.getElementById('viewer').innerHTML = '';
+  viewer = pannellum.viewer('viewer', {
+    default: { firstScene:id, autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
+    scenes: buildScenes()
+  });
+  attachViewerEvents();
+  activeScene = id;
+  document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
+  updateSidebar();
 }
 
 // ============ INITIAL VIEW ============
