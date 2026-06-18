@@ -45,6 +45,11 @@
     #viewer { width:100%; height:100%; }
     .pnlm-zoom-controls { display:none !important; }
 
+    #version {
+      position:absolute; bottom:6px; left:8px; font-size:10px; color:rgba(255,255,255,0.3);
+      pointer-events:none; z-index:50;
+    }
+
     #pano-title {
       position:absolute; top:16px; left:50%; transform:translateX(-50%);
       background:rgba(0,0,0,0.6); color:#fff; padding:6px 20px;
@@ -165,6 +170,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
+  <div id="version">v6</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -535,26 +541,30 @@ function renderPlanDots() {
     d.style.left=p.px+'%'; d.style.top=p.py+'%';
     d.style.width=p.pm+'px'; d.style.height=p.pm+'px';
     d.title=p.titlu;
-    d.onclick=()=>{ viewer.loadScene(p.id); closePlan(); };
     wrap.appendChild(d);
     enableDotDrag(d,p,wrap);
   });
 }
 
 function enableDotDrag(dot, pano, wrap) {
-  let drag=false, sx,sy,sl,st;
+  let drag=false, dragged=false, sx,sy,sl,st;
   dot.addEventListener('mousedown',e=>{
-    drag=true; sx=e.clientX; sy=e.clientY; sl=pano.px; st=pano.py;
+    drag=true; dragged=false; sx=e.clientX; sy=e.clientY; sl=pano.px; st=pano.py;
     e.preventDefault(); e.stopPropagation();
   });
   document.addEventListener('mousemove',e=>{
     if(!drag)return;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(Math.abs(dx)>4||Math.abs(dy)>4) dragged=true;
     const r=wrap.getBoundingClientRect();
-    pano.px=Math.max(0,Math.min(100,sl+(e.clientX-sx)/r.width*100));
-    pano.py=Math.max(0,Math.min(100,st+(e.clientY-sy)/r.height*100));
+    pano.px=Math.max(0,Math.min(100,sl+dx/r.width*100));
+    pano.py=Math.max(0,Math.min(100,st+dy/r.height*100));
     dot.style.left=pano.px+'%'; dot.style.top=pano.py+'%';
   });
-  document.addEventListener('mouseup',()=>{ drag=false; });
+  document.addEventListener('mouseup',e=>{
+    if(drag && !dragged) { viewer.loadScene(pano.id); closePlan(); }
+    drag=false;
+  });
   dot.addEventListener('wheel',e=>{
     e.preventDefault();
     pano.pm=Math.max(12,Math.min(50,pano.pm-Math.sign(e.deltaY)*2));
