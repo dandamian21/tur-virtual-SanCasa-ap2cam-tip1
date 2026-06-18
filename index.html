@@ -11,239 +11,166 @@
     body { background:#111; font-family:'Segoe UI',sans-serif; color:#fff; height:100vh; overflow:hidden; display:flex; }
 
     /* SIDEBAR */
-    #sidebar {
-      width:220px; min-width:220px; height:100vh; background:#1a1a1a;
-      border-right:1px solid #333; display:flex; flex-direction:column; z-index:10; overflow:hidden;
-    }
-    #sidebar-header {
-      padding:14px 16px; border-bottom:1px solid #333; font-size:12px;
-      text-transform:uppercase; letter-spacing:1px; color:#aaa; flex-shrink:0;
-    }
-    #scene-list { flex:1; overflow-y:auto; padding:8px 0; }
-    .scene-item {
-      padding:10px 16px; cursor:pointer; font-size:13px; color:#ccc;
-      border-left:3px solid transparent; transition:all 0.15s; display:flex; align-items:center; gap:8px;
-    }
-    .scene-item:hover { background:rgba(255,255,255,0.07); color:#fff; }
-    .scene-item.active { background:rgba(240,165,0,0.12); color:#f0a500; border-left-color:#f0a500; font-weight:600; }
-    .scene-item .dot { width:8px; height:8px; border-radius:50%; background:#555; flex-shrink:0; }
+    #sidebar { width:220px; min-width:220px; height:100vh; background:#1a1a1a; border-right:1px solid #333; display:flex; flex-direction:column; z-index:10; }
+    #sidebar-header { padding:14px 16px; border-bottom:1px solid #333; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#888; flex-shrink:0; }
+    #scene-list { flex:1; overflow-y:auto; padding:6px 0; }
+    .scene-item { padding:9px 16px; cursor:pointer; font-size:13px; color:#bbb; border-left:3px solid transparent; transition:all 0.15s; display:flex; align-items:center; gap:8px; }
+    .scene-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
+    .scene-item.active { background:rgba(240,165,0,0.1); color:#f0a500; border-left-color:#f0a500; font-weight:600; }
+    .scene-item .dot { width:7px; height:7px; border-radius:50%; background:#444; flex-shrink:0; }
     .scene-item.active .dot { background:#f0a500; }
-
-    #sidebar-tools { padding:12px; border-top:1px solid #333; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
-    .tool-btn {
-      width:100%; padding:9px 12px; background:rgba(255,255,255,0.07); border:1px solid #444;
-      color:#ccc; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;
-      text-align:left; transition:all 0.2s;
-    }
-    .tool-btn:hover { background:rgba(255,255,255,0.14); color:#fff; border-color:#666; }
-    .tool-btn.active { background:rgba(240,165,0,0.2); border-color:#f0a500; color:#f0a500; }
-    .tool-btn.green { background:rgba(34,197,94,0.15); border-color:#22c55e; color:#22c55e; }
-    .tool-btn.green:hover { background:rgba(34,197,94,0.28); }
+    #sidebar-tools { padding:10px; border-top:1px solid #333; display:flex; flex-direction:column; gap:7px; flex-shrink:0; }
+    .tool-btn { width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid #3a3a3a; color:#bbb; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; text-align:left; transition:all 0.15s; }
+    .tool-btn:hover { background:rgba(255,255,255,0.12); color:#fff; border-color:#555; }
+    .tool-btn.active { background:rgba(240,165,0,0.18); border-color:#f0a500; color:#f0a500; }
+    .tool-btn.green { background:rgba(34,197,94,0.12); border-color:#22c55e; color:#22c55e; }
+    .tool-btn.green:hover { background:rgba(34,197,94,0.22); }
 
     /* VIEWER */
     #viewer-wrap { flex:1; position:relative; height:100vh; overflow:hidden; }
     #viewer { width:100%; height:100%; }
     .pnlm-zoom-controls { display:none !important; }
 
-    #version {
-      position:absolute; bottom:6px; left:8px; font-size:10px; color:rgba(255,255,255,0.3);
-      pointer-events:none; z-index:50;
-    }
-
-    #pano-title {
-      position:absolute; top:16px; left:50%; transform:translateX(-50%);
-      background:rgba(0,0,0,0.6); color:#fff; padding:6px 20px;
-      border-radius:20px; font-size:14px; font-weight:600; pointer-events:none; z-index:50;
-      backdrop-filter:blur(6px); white-space:nowrap;
-    }
-
-    /* Bara adaugare hotspot */
-    #add-hs-bar {
-      display:none; position:absolute; top:60px; left:50%; transform:translateX(-50%);
-      background:rgba(240,165,0,0.92); color:#111; padding:8px 20px;
-      border-radius:20px; font-size:13px; font-weight:700; z-index:50; pointer-events:none;
-    }
-    #add-hs-bar.visible { display:block; }
-
-    /* Bara initial view */
-    #iv-bar {
-      display:none; position:absolute; top:60px; left:50%; transform:translateX(-50%);
-      background:rgba(59,130,246,0.92); color:#fff; padding:8px 20px;
-      border-radius:20px; font-size:13px; font-weight:700; z-index:50; pointer-events:none;
-    }
-    #iv-bar.visible { display:block; }
-
-    /* Crosshair */
-    #crosshair {
-      display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      pointer-events:none; z-index:50;
-    }
+    #version { position:absolute; bottom:6px; left:8px; font-size:10px; color:rgba(255,255,255,0.25); pointer-events:none; z-index:50; }
+    #pano-title { position:absolute; top:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:6px 20px; border-radius:20px; font-size:14px; font-weight:600; pointer-events:none; z-index:50; backdrop-filter:blur(6px); white-space:nowrap; }
+    #info-bar { display:none; position:absolute; top:55px; left:50%; transform:translateX(-50%); padding:7px 18px; border-radius:20px; font-size:12px; font-weight:700; z-index:50; pointer-events:none; white-space:nowrap; }
+    #info-bar.visible { display:block; }
+    #info-bar.yellow { background:rgba(240,165,0,0.92); color:#111; }
+    #info-bar.blue { background:rgba(59,130,246,0.92); color:#fff; }
+    #crosshair { display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:50; }
     #crosshair.visible { display:block; }
 
-    /* FIX CRITIC: pannellum ascunde toate hotspot-urile implicit cu visibility:hidden */
-    /* Trebuie sa suprascriem pentru clasa noastra custom */
+    /* HOTSPOT CSS - fix pannellum visibility:hidden */
     .pnlm-hotspot-base.pnlm-hs-custom {
-      visibility: visible !important;
-      cursor: pointer !important;
-      background: none !important;
-      border: none !important;
-      width: auto !important;
-      height: auto !important;
-      transform: translate(-50%, -50%);
+      visibility:visible !important;
+      cursor:pointer !important;
+      background:none !important;
+      border:none !important;
+      width:auto !important;
+      height:auto !important;
+      transform:translate(-50%,-50%);
     }
-    .pnlm-hotspot-base.pnlm-hs-custom:hover svg { filter: brightness(1.4); }
-
-    /* Hotspot-uri custom SVG */
-    .hs-el {
-      position:absolute; cursor:pointer; transform:translate(-50%,-50%);
-      pointer-events:all; z-index:40;
+    .pnlm-hotspot-base.pnlm-hs-custom.edit-mode {
+      outline:2.5px dashed #f0a500 !important;
+      outline-offset:4px;
+      border-radius:4px;
     }
 
     /* PLAN MODAL */
-    #plan-bg {
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200;
-    }
-    #plan-bg.open { display:flex; align-items:center; justify-content:center; }
-    #plan-modal {
-      background:#1a1a1a; border-radius:16px; padding:18px;
-      width:min(94vw,900px); max-height:94vh; border:1px solid #444;
-      box-shadow:0 20px 60px rgba(0,0,0,0.8); display:flex; flex-direction:column;
-    }
-    #plan-modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    #plan-modal-header h3 { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#aaa; }
-    #plan-modal-header-btns { display:flex; gap:8px; }
-    .pm-btn {
-      padding:7px 14px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; border:1px solid #555; background:#2a2a2a; color:#ccc;
-    }
+    #plan-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200; align-items:center; justify-content:center; }
+    #plan-bg.open { display:flex; }
+    #plan-modal { background:#1a1a1a; border-radius:16px; padding:18px; width:min(94vw,900px); max-height:94vh; border:1px solid #444; box-shadow:0 20px 60px rgba(0,0,0,0.8); display:flex; flex-direction:column; gap:12px; }
+    #plan-modal-hdr { display:flex; justify-content:space-between; align-items:center; }
+    #plan-modal-hdr h3 { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#888; }
+    #plan-modal-hdr-btns { display:flex; gap:8px; }
+    .pm-btn { padding:6px 14px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; border:1px solid #555; background:#2a2a2a; color:#ccc; transition:all 0.15s; }
+    .pm-btn:hover { border-color:#888; color:#fff; }
     .pm-btn.green { border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.1); }
-    .pm-btn.close-x { width:30px; height:30px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; }
-    #plan-img-wrap { position:relative; flex:1; overflow:hidden; }
-    #plan-img-wrap img { width:100%; height:auto; display:block; border-radius:8px; pointer-events:none; user-select:none; }
-    .pdot {
-      position:absolute; border-radius:50%; border:2.5px solid rgba(255,255,255,0.85);
-      background:rgba(255,255,255,0.18); cursor:grab; transform:translate(-50%,-50%);
-      display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:700;
-    }
+    .pm-btn.cx { width:30px; height:30px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; }
+    #plan-wrap { position:relative; overflow:hidden; flex:1; }
+    #plan-wrap img { width:100%; height:auto; display:block; border-radius:8px; pointer-events:none; user-select:none; }
+    .pdot { position:absolute; border-radius:50%; border:2.5px solid rgba(255,255,255,0.8); background:rgba(255,255,255,0.15); cursor:grab; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; }
     .pdot:hover { border-color:#f0a500; }
-    .pdot.active { border-color:#f0a500; background:rgba(240,165,0,0.4); box-shadow:0 0 0 4px rgba(240,165,0,0.25); }
-    #plan-hint { font-size:11px; color:#666; margin-top:8px; text-align:center; }
+    .pdot.active { border-color:#f0a500; background:rgba(240,165,0,0.35); box-shadow:0 0 0 4px rgba(240,165,0,0.2); }
+    #plan-hint { font-size:11px; color:#555; text-align:center; }
 
-    /* HOTSPOT EDITOR MODAL */
-    #hs-bg {
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300;
-    }
-    #hs-bg.open { display:flex; align-items:center; justify-content:center; }
-    #hs-modal {
-      background:#1c1c1c; border-radius:14px; padding:20px; width:380px;
-      border:1px solid #444; box-shadow:0 20px 60px rgba(0,0,0,0.8);
-    }
-    #hs-modal h3 { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#aaa; margin-bottom:16px; }
-    .hm-row { margin-bottom:14px; }
-    .hm-row label { display:block; font-size:11px; color:#888; margin-bottom:5px; text-transform:uppercase; }
-    .hm-row select { width:100%; background:#2a2a2a; border:1px solid #555; color:#fff; padding:8px 10px; border-radius:8px; font-size:13px; }
-    .hm-row select option { background:#2a2a2a; }
+    /* HOTSPOT MODAL */
+    #hs-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:400; align-items:center; justify-content:center; }
+    #hs-bg.open { display:flex; }
+    #hs-modal { background:#1c1c1c; border-radius:14px; padding:20px; width:360px; border:1px solid #444; box-shadow:0 20px 60px rgba(0,0,0,0.8); }
+    #hs-modal h3 { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#888; margin-bottom:16px; }
+    .hm-row { margin-bottom:13px; }
+    .hm-row label { display:block; font-size:11px; color:#777; margin-bottom:5px; text-transform:uppercase; }
+    .hm-row select { width:100%; background:#252525; border:1px solid #444; color:#fff; padding:8px 10px; border-radius:8px; font-size:13px; }
     .type-btns { display:flex; gap:8px; }
-    .type-btn {
-      flex:1; padding:10px 8px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;
-      border:2px solid #444; background:#222; color:#888; text-align:center; transition:all 0.15s;
-    }
-    .type-btn.sel { border-color:#f0a500; background:rgba(240,165,0,0.15); color:#f0a500; }
-    .slider-row { display:flex; align-items:center; gap:10px; }
-    .slider-row input[type=range] { flex:1; accent-color:#f0a500; }
-    .slider-val { min-width:38px; text-align:right; color:#f0a500; font-size:13px; font-weight:600; }
-    .hm-btns { display:flex; gap:8px; margin-top:18px; }
-    .hm-btn { flex:1; padding:10px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:700; border:none; }
-    .hm-btn.cancel { background:#2a2a2a; color:#aaa; border:1px solid #555; }
-    .hm-btn.del { background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid #ef4444; display:none; }
+    .type-btn { flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; border:2px solid #3a3a3a; background:#222; color:#777; text-align:center; transition:all 0.15s; }
+    .type-btn.sel { border-color:#f0a500; background:rgba(240,165,0,0.12); color:#f0a500; }
+    .sl-row { display:flex; align-items:center; gap:10px; }
+    .sl-row input[type=range] { flex:1; accent-color:#f0a500; }
+    .sl-val { min-width:36px; text-align:right; color:#f0a500; font-size:13px; font-weight:600; }
+    .hm-btns { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+    .hm-btn { flex:1; min-width:80px; padding:9px; border-radius:9px; cursor:pointer; font-size:12px; font-weight:700; border:none; transition:all 0.15s; }
+    .hm-btn.cancel { background:#2a2a2a; color:#aaa; border:1px solid #444; }
+    .hm-btn.del { background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid #ef4444; }
+    .hm-btn.move { background:rgba(59,130,246,0.15); color:#3b82f6; border:1px solid #3b82f6; }
     .hm-btn.ok { background:#f0a500; color:#111; }
 
     /* TOAST */
-    #toast {
-      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-      background:#22c55e; color:#fff; padding:10px 24px; border-radius:20px;
-      font-size:13px; font-weight:600; z-index:999; opacity:0; transition:opacity 0.3s; pointer-events:none;
-    }
+    #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#22c55e; color:#fff; padding:9px 22px; border-radius:20px; font-size:13px; font-weight:600; z-index:999; opacity:0; transition:opacity 0.3s; pointer-events:none; }
     #toast.show { opacity:1; }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
-  <div id="sidebar-header">Panorame</div>
+  <div id="sidebar-header">Panorame (16)</div>
   <div id="scene-list"></div>
   <div id="sidebar-tools">
-    <button class="tool-btn" id="btn-plan" onclick="openPlan()">🗺️ Plan apartament</button>
+    <button class="tool-btn" onclick="openPlan()">🗺️ Plan apartament</button>
     <button class="tool-btn" id="btn-add-hs" onclick="startAddHS()">➕ Adaugă hotspot</button>
-    <button class="tool-btn" id="btn-edit-hs" onclick="toggleHSEditMode()">✏️ Editează hotspot-uri</button>
-    <button class="tool-btn" id="btn-iv" onclick="startIV()">👁️ Setează vedere inițială</button>
+    <button class="tool-btn" id="btn-edit-hs" onclick="toggleEditMode()">✏️ Editează hotspot-uri</button>
+    <button class="tool-btn" id="btn-iv" onclick="startIV()">👁️ Vedere inițială</button>
     <button class="tool-btn green" onclick="saveAll()">💾 Salvează tot</button>
   </div>
 </div>
 
-<!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v14</div>
+  <div id="version">v15</div>
   <div id="pano-title">Hol-01</div>
-  <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
-  <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
-  <div id="crosshair">
-    <svg width="44" height="44"><circle cx="22" cy="22" r="20" fill="none" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="22" y1="8" x2="22" y2="36" stroke="#f0a500" stroke-width="1.5"/><line x1="8" y1="22" x2="36" y2="22" stroke="#f0a500" stroke-width="1.5"/></svg>
-  </div>
+  <div id="info-bar"></div>
+  <div id="crosshair"><svg width="44" height="44"><circle cx="22" cy="22" r="20" fill="none" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="22" y1="8" x2="22" y2="36" stroke="#f0a500" stroke-width="1.5"/><line x1="8" y1="22" x2="36" y2="22" stroke="#f0a500" stroke-width="1.5"/></svg></div>
 </div>
 
-<!-- PLAN MODAL -->
+<!-- PLAN -->
 <div id="plan-bg">
   <div id="plan-modal">
-    <div id="plan-modal-header">
+    <div id="plan-modal-hdr">
       <h3>Plan apartament</h3>
-      <div id="plan-modal-header-btns">
+      <div id="plan-modal-hdr-btns">
         <button class="pm-btn green" onclick="savePlan()">💾 Salvează pozițiile</button>
-        <button class="pm-btn close-x" onclick="closePlan()">✕</button>
+        <button class="pm-btn cx" onclick="closePlan()">✕</button>
       </div>
     </div>
-    <div id="plan-img-wrap">
-      <img src="00_ap.2cam-TOP-01.jpg" alt="Plan">
-    </div>
-    <div id="plan-hint">Trage punctele • Scroll pe punct = schimbă mărimea • Click pe punct = du-te la panoramă</div>
+    <div id="plan-wrap"><img src="00_ap.2cam-TOP-01.jpg" alt="Plan"></div>
+    <div id="plan-hint">Trage punctele • Scroll pe punct = schimbă mărimea • Click = navighează</div>
   </div>
 </div>
 
-<!-- HOTSPOT MODAL -->
+<!-- EDITOR HOTSPOT -->
 <div id="hs-bg">
   <div id="hs-modal">
     <h3 id="hs-title">Hotspot nou</h3>
     <div class="hm-row">
       <label>Tip</label>
       <div class="type-btns">
-        <div class="type-btn sel" id="tb-circle" onclick="setHSType('circle')">⭕ Cerc pardoseală</div>
-        <div class="type-btn" id="tb-arrow" onclick="setHSType('arrow')">⬆️ Săgeată ușă</div>
+        <div class="type-btn sel" id="tb-c" onclick="setType('circle')">⭕ Cerc podea</div>
+        <div class="type-btn" id="tb-a" onclick="setType('arrow')">⬆️ Săgeată ușă</div>
       </div>
     </div>
     <div class="hm-row">
-      <label>Duce către panorama</label>
-      <select id="hs-target-sel"></select>
+      <label>Duce către</label>
+      <select id="hs-sel"></select>
     </div>
     <div class="hm-row">
       <label>Mărime</label>
-      <div class="slider-row">
-        <input type="range" id="sl-size" min="30" max="140" value="60" oninput="slUpdate()">
-        <span class="slider-val" id="sv-size">60</span>
+      <div class="sl-row">
+        <input type="range" id="sl-sz" min="30" max="140" value="60" oninput="slUpd()">
+        <span class="sl-val" id="sv-sz">60</span>
       </div>
     </div>
     <div class="hm-row">
       <label>Transparență</label>
-      <div class="slider-row">
-        <input type="range" id="sl-op" min="10" max="100" value="70" oninput="slUpdate()">
-        <span class="slider-val" id="sv-op">70%</span>
+      <div class="sl-row">
+        <input type="range" id="sl-op" min="10" max="100" value="70" oninput="slUpd()">
+        <span class="sl-val" id="sv-op">70%</span>
       </div>
     </div>
     <div class="hm-btns">
       <button class="hm-btn cancel" onclick="closeHSModal()">Anulează</button>
-      <button class="hm-btn del" id="hs-del" onclick="deleteHS()">🗑️ Șterge</button>
-      <button class="hm-btn repos" id="hs-repos" onclick="repositionHS()" style="display:none;flex:1;padding:10px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700;background:rgba(59,130,246,0.2);color:#3b82f6;border:1px solid #3b82f6;">📍 Mută</button>
-      <button class="hm-btn ok" onclick="confirmHS()">✓ Confirmă</button>
+      <button class="hm-btn del" id="btn-del" onclick="delHS()">🗑️ Șterge</button>
+      <button class="hm-btn move" id="btn-move" onclick="startMove()">📍 Mută</button>
+      <button class="hm-btn ok" onclick="confirmHS()">✓ OK</button>
     </div>
   </div>
 </div>
@@ -251,421 +178,381 @@
 <div id="toast"></div>
 
 <script>
-// ============ DATE ============
+// ===== DATE =====
 const panorame = [
-  {id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  px:47.5, py:62.0, pm:22},
-  {id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  px:44.0, py:72.0, pm:22},
-  {id:"hol03",  titlu:"Hol-03",       fisier:"03_ap.2cam-Hol-03-Exp-0.5.jpg",  px:50.0, py:72.0, pm:22},
-  {id:"liv01",  titlu:"Living-01",    fisier:"04_ap.2cam-LIV-01-Exp-0.jpg",    px:45.0, py:35.0, pm:22},
-  {id:"liv02",  titlu:"Living-02",    fisier:"05_ap.2cam-LIV-02-Exp-0.jpg",    px:52.0, py:25.0, pm:22},
-  {id:"liv03",  titlu:"Living-03",    fisier:"06_ap.2cam-LIV-03-Exp-0.jpg",    px:40.0, py:22.0, pm:22},
-  {id:"liv04",  titlu:"Living-04",    fisier:"07_ap.2cam-LIV-04-Exp-0.jpg",    px:35.0, py:32.0, pm:22},
-  {id:"ter01",  titlu:"Terasă-01",    fisier:"08_ap.2cam-TER-01-Exp-0.jpg",    px:82.0, py:22.0, pm:22},
-  {id:"ter02",  titlu:"Terasă-02",    fisier:"09_ap.2cam-TER-02-Exp-0.5.jpg",  px:90.0, py:32.0, pm:22},
-  {id:"buc01",  titlu:"Bucătărie-01", fisier:"10_ap.2cam-Buc-01_Exp-0.5.jpg",  px:78.0, py:72.0, pm:22},
-  {id:"buc02",  titlu:"Bucătărie-02", fisier:"11_ap.2cam-Buc-02_Exp-0.5.jpg",  px:88.0, py:80.0, pm:22},
-  {id:"dorm01", titlu:"Dormitor-01",  fisier:"12_ap.2cam-Dorm-01-Exp-0.jpg",   px:14.0, py:25.0, pm:22},
-  {id:"dorm02", titlu:"Dormitor-02",  fisier:"13_ap.2cam-Dorm-02-Exp-0.jpg",   px:22.0, py:38.0, pm:22},
-  {id:"baie01", titlu:"Baie-01",      fisier:"14_ap.2cam-Baie-01_Exp 1.jpg",   px:10.0, py:72.0, pm:22},
-  {id:"baie02", titlu:"Baie-02",      fisier:"15_ap.2cam-Baie-02_Exp 1.jpg",   px:18.0, py:78.0, pm:22},
-  {id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03_Exp 1.jpg",   px:24.0, py:68.0, pm:22},
+  {id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  px:47.5,py:62.0,pm:22},
+  {id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  px:44.0,py:72.0,pm:22},
+  {id:"hol03",  titlu:"Hol-03",       fisier:"03_ap.2cam-Hol-03-Exp-0.5.jpg",  px:50.0,py:72.0,pm:22},
+  {id:"liv01",  titlu:"Living-01",    fisier:"04_ap.2cam-LIV-01-Exp-0.jpg",    px:45.0,py:35.0,pm:22},
+  {id:"liv02",  titlu:"Living-02",    fisier:"05_ap.2cam-LIV-02-Exp-0.jpg",    px:52.0,py:25.0,pm:22},
+  {id:"liv03",  titlu:"Living-03",    fisier:"06_ap.2cam-LIV-03-Exp-0.jpg",    px:40.0,py:22.0,pm:22},
+  {id:"liv04",  titlu:"Living-04",    fisier:"07_ap.2cam-LIV-04-Exp-0.jpg",    px:35.0,py:32.0,pm:22},
+  {id:"ter01",  titlu:"Terasă-01",    fisier:"08_ap.2cam-TER-01-Exp-0.jpg",    px:82.0,py:22.0,pm:22},
+  {id:"ter02",  titlu:"Terasă-02",    fisier:"09_ap.2cam-TER-02-Exp-0.5.jpg",  px:90.0,py:32.0,pm:22},
+  {id:"buc01",  titlu:"Bucătărie-01", fisier:"10_ap.2cam-Buc-01_Exp-0.5.jpg",  px:78.0,py:72.0,pm:22},
+  {id:"buc02",  titlu:"Bucătărie-02", fisier:"11_ap.2cam-Buc-02_Exp-0.5.jpg",  px:88.0,py:80.0,pm:22},
+  {id:"dorm01", titlu:"Dormitor-01",  fisier:"12_ap.2cam-Dorm-01-Exp-0.jpg",   px:14.0,py:25.0,pm:22},
+  {id:"dorm02", titlu:"Dormitor-02",  fisier:"13_ap.2cam-Dorm-02-Exp-0.jpg",   px:22.0,py:38.0,pm:22},
+  {id:"baie01", titlu:"Baie-01",      fisier:"14_ap.2cam-Baie-01_Exp 1.jpg",   px:10.0,py:72.0,pm:22},
+  {id:"baie02", titlu:"Baie-02",      fisier:"15_ap.2cam-Baie-02_Exp 1.jpg",   px:18.0,py:78.0,pm:22},
+  {id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03_Exp 1.jpg",   px:24.0,py:68.0,pm:22},
 ];
 
-// ============ STATE ============
-let hotspots = {};   // { sceneId: [{id,type,pitch,yaw,target,size,opacity},...] }
-let initView = {};   // { sceneId: {pitch,yaw,hfov} }
+// ===== STATE =====
+let HS = {};        // hotspots per scene: { sceneId: [{pitch,yaw,type,target,size,opacity},...] }
+let IV = {};        // initial view per scene: { sceneId: {pitch,yaw,hfov} }
 let activeScene = 'hol01';
-let addingHS = false;
+let editMode = false;
 let ivMode = false;
-let editHSIdx = null;
+let addingHS = false;
+let movingHS = false;
 let pendingHS = null;
+let editIdx = null;
+let viewer = null;
 
-panorame.forEach(p => { hotspots[p.id] = []; });
+panorame.forEach(p => { HS[p.id] = []; });
 
-// ============ LOCALSTORAGE ============
-function loadSaved() {
+// ===== STORAGE =====
+function load() {
   try {
-    const h = localStorage.getItem('tv_hs'); if(h) hotspots = JSON.parse(h);
-    const v = localStorage.getItem('tv_iv'); if(v) initView = JSON.parse(v);
-    const p = localStorage.getItem('tv_plan');
-    if(p) { JSON.parse(p).forEach(s => { const f=panorame.find(x=>x.id===s.id); if(f){f.px=s.px;f.py=s.py;f.pm=s.pm;} }); }
-  } catch(e) { console.warn('Load error',e); }
+    const h=localStorage.getItem('tv2_hs'); if(h) HS=JSON.parse(h);
+    const v=localStorage.getItem('tv2_iv'); if(v) IV=JSON.parse(v);
+    const p=localStorage.getItem('tv2_pl');
+    if(p) JSON.parse(p).forEach(s=>{const f=panorame.find(x=>x.id===s.id);if(f){f.px=s.px;f.py=s.py;f.pm=s.pm;}});
+    // Asigura-te ca fiecare scena are array
+    panorame.forEach(p=>{ if(!HS[p.id]) HS[p.id]=[]; });
+  } catch(e){}
 }
 
 function saveAll() {
-  try {
-    localStorage.setItem('tv_hs', JSON.stringify(hotspots));
-    localStorage.setItem('tv_iv', JSON.stringify(initView));
-    savePlanData();
-    toast('✅ Salvat cu succes!');
-  } catch(e) { toast('❌ Eroare salvare: '+e.message); }
+  localStorage.setItem('tv2_hs', JSON.stringify(HS));
+  localStorage.setItem('tv2_iv', JSON.stringify(IV));
+  localStorage.setItem('tv2_pl', JSON.stringify(panorame.map(p=>({id:p.id,px:p.px,py:p.py,pm:p.pm}))));
+  toast('✅ Salvat!');
 }
 
-function savePlanData() {
-  localStorage.setItem('tv_plan', JSON.stringify(panorame.map(p=>({id:p.id,px:p.px,py:p.py,pm:p.pm}))));
+function savePlan() {
+  localStorage.setItem('tv2_pl', JSON.stringify(panorame.map(p=>({id:p.id,px:p.px,py:p.py,pm:p.pm}))));
+  toast('✅ Pozițiile salvate!');
 }
-
-function savePlan() { savePlanData(); toast('✅ Pozițiile pe plan salvate!'); }
 
 function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ============ PANNELLUM ============
-function buildScenes() {
-  const s = {};
-  panorame.forEach(p => {
-    const iv = initView[p.id] || {pitch:0,yaw:0,hfov:100};
-    s[p.id] = { title:p.titlu, panorama:p.fisier, pitch:iv.pitch, yaw:iv.yaw, hfov:iv.hfov, hotSpots:[] };
-  });
-  return s;
+function infoBar(msg, color) {
+  const b=document.getElementById('info-bar');
+  if(!msg) { b.classList.remove('visible'); return; }
+  b.textContent=msg; b.className='visible '+(color||'yellow');
 }
 
-loadSaved();
-
-let viewer = pannellum.viewer('viewer', {
-  default: { firstScene:'hol01', autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
-  scenes: buildScenes()
-});
-
-function attachViewerEvents() {
-  viewer.on('scenechange', function(id) {
-    activeScene = id;
-    document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
-    updateSidebar();
-    drawHS();
-  });
-}
-attachViewerEvents();
-
-function goToScene(id) { rebuildViewer(id); }
-
-function rebuildViewer(id) {
-  viewer.destroy();
-  document.getElementById('viewer').innerHTML = '';
-  viewer = pannellum.viewer('viewer', {
-    default: { firstScene:id, autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
-    scenes: buildScenes()
-  });
-  attachViewerEvents();
-  activeScene = id;
-  document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
-  updateSidebar();
-}
-
-// Opreste zoom
-document.getElementById('viewer-wrap').addEventListener('wheel', e=>e.stopPropagation(), true);
-
-// ============ SIDEBAR ============
-function buildSidebar() {
-  const list = document.getElementById('scene-list');
-  list.innerHTML = '';
-  panorame.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'scene-item' + (p.id===activeScene?' active':'');
-    div.id = 'si-'+p.id;
-    div.innerHTML = `<div class="dot"></div><span>${p.titlu}</span>`;
-    div.onclick = () => goToScene(p.id);
-    list.appendChild(div);
-  });
-}
-
-function updateSidebar() {
-  document.querySelectorAll('.scene-item').forEach(el=>el.classList.remove('active'));
-  const el = document.getElementById('si-'+activeScene);
-  if(el) { el.classList.add('active'); el.scrollIntoView({block:'nearest'}); }
-}
-
-buildSidebar();
-
-// ============ HOTSPOT-URI - sistem nativ Pannellum ============
-let hsEditMode = false;
-
-function toggleHSEditMode() {
-  hsEditMode = !hsEditMode;
-  document.getElementById('btn-edit-hs').classList.toggle('active', hsEditMode);
-  document.getElementById('btn-edit-hs').textContent = hsEditMode ? '✏️ Mod editare ON' : '✏️ Editează hotspot-uri';
-  // Rebuild ca sa schimbe comportamentul click
-  rebuildViewer(activeScene);
-  toast(hsEditMode ? '✏️ Click pe hotspot pentru a-l edita' : '✅ Mod editare dezactivat');
-}
-
-function createHSTooltip(div, args) {
-  div.style.opacity = (args.opacity||70)/100;
+// ===== PANNELLUM =====
+function hsTooltipFn(div, args) {
+  div.style.opacity=(args.opacity||70)/100;
   if(args.type==='circle') {
     const s=args.size||60;
-    div.innerHTML = `<svg width="${s}" height="${Math.round(s*0.45)}" viewBox="0 0 100 45" xmlns="http://www.w3.org/2000/svg">
+    div.innerHTML=`<svg width="${s}" height="${Math.round(s*0.45)}" viewBox="0 0 100 45">
       <ellipse cx="50" cy="22" rx="46" ry="20" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="3"/>
       <ellipse cx="50" cy="22" rx="16" ry="7" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="2"/>
     </svg>`;
   } else {
-    const s=args.size||60; const w=Math.round(s*0.65);
-    div.innerHTML = `<svg width="${w}" height="${s}" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+    const s=args.size||60,w=Math.round(s*0.65);
+    div.innerHTML=`<svg width="${w}" height="${s}" viewBox="0 0 40 60">
       <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>`;
   }
-  // In modul editare, arata un indicator vizual
-  if(hsEditMode) {
-    div.style.outline = '2px dashed #f0a500';
-    div.style.outlineOffset = '3px';
-  }
+  if(editMode) div.classList.add('edit-mode');
 }
 
-function hsClick(e, args) {
-  if(addingHS) return;
-  if(hsEditMode) {
-    openEditHS(args.idx);
+function hsClickFn(e, args) {
+  if(addingHS||movingHS) return;
+  if(editMode) {
+    // Editare — deschide modal
+    editIdx = args.idx;
+    pendingHS = {...HS[activeScene][args.idx]};
+    openHSModal(true);
   } else {
     goToScene(args.target);
   }
 }
 
 function buildScenes() {
-  const s = {};
-  panorame.forEach(p => {
-    const iv = initView[p.id] || {pitch:0,yaw:0,hfov:100};
-    const hs = (hotspots[p.id]||[]).map((h,i) => ({
-      type: 'custom',
-      pitch: h.pitch,
-      yaw: h.yaw,
-      cssClass: 'pnlm-hs-custom',
-      createTooltipFunc: createHSTooltip,
-      createTooltipArgs: {type:h.type, size:h.size, opacity:h.opacity, target:h.target, idx:i},
-      clickHandlerFunc: hsClick,
-      clickHandlerArgs: {target:h.target}
+  const s={};
+  panorame.forEach(p=>{
+    const iv=IV[p.id]||{pitch:0,yaw:0,hfov:100};
+    const hotspots=(HS[p.id]||[]).map((h,i)=>({
+      type:'custom',
+      pitch:h.pitch, yaw:h.yaw,
+      cssClass:'pnlm-hs-custom',
+      createTooltipFunc:hsTooltipFn,
+      createTooltipArgs:{type:h.type,size:h.size,opacity:h.opacity,target:h.target,idx:i},
+      clickHandlerFunc:hsClickFn,
+      clickHandlerArgs:{target:h.target,idx:i}
     }));
-    s[p.id] = { title:p.titlu, panorama:p.fisier, pitch:iv.pitch, yaw:iv.yaw, hfov:iv.hfov, hotSpots:hs };
+    s[p.id]={title:p.titlu,panorama:p.fisier,pitch:iv.pitch,yaw:iv.yaw,hfov:iv.hfov,hotSpots:hotspots};
   });
   return s;
 }
 
-function drawHS() {} // hotspot-urile sunt acum in buildScenes, nu mai e nevoie de drawHS
-function animate() { requestAnimationFrame(animate); }
-animate();
+function initViewer(sceneId) {
+  if(viewer) { try{viewer.destroy();}catch(e){} }
+  document.getElementById('viewer').innerHTML='';
+  viewer=pannellum.viewer('viewer',{
+    default:{firstScene:sceneId,autoLoad:true,showControls:false,mouseZoom:false,keyboardZoom:false,showFullscreenCtrl:false},
+    scenes:buildScenes()
+  });
+  viewer.on('scenechange',function(id){
+    activeScene=id;
+    document.getElementById('pano-title').textContent=panorame.find(p=>p.id===id)?.titlu||'';
+    updateSidebar();
+  });
+  activeScene=sceneId;
+  document.getElementById('pano-title').textContent=panorame.find(p=>p.id===sceneId)?.titlu||'';
+  updateSidebar();
+  document.getElementById('viewer-wrap').addEventListener('wheel',e=>e.stopPropagation(),{capture:true,once:false,passive:false});
+}
 
-// ============ ADAUGARE HOTSPOT ============
+function goToScene(id) {
+  initViewer(id);
+}
+
+// ===== SIDEBAR =====
+function buildSidebar() {
+  const list=document.getElementById('scene-list');
+  list.innerHTML='';
+  panorame.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='scene-item'+(p.id===activeScene?' active':'');
+    d.id='si-'+p.id;
+    d.innerHTML=`<div class="dot"></div><span>${p.titlu}</span>`;
+    d.onclick=()=>goToScene(p.id);
+    list.appendChild(d);
+  });
+}
+
+function updateSidebar() {
+  document.querySelectorAll('.scene-item').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('si-'+activeScene);
+  if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}
+}
+
+// ===== EDIT MODE =====
+function toggleEditMode() {
+  editMode=!editMode;
+  document.getElementById('btn-edit-hs').classList.toggle('active',editMode);
+  document.getElementById('btn-edit-hs').textContent=editMode?'✏️ Editare ON — click pe hotspot':'✏️ Editează hotspot-uri';
+  infoBar(editMode?'Click pe un hotspot pentru a-l edita':null);
+  initViewer(activeScene); // rebuild ca sa aplice/scoata edit-mode CSS
+}
+
+// ===== ADAUGARE HOTSPOT =====
 function startAddHS() {
-  addingHS = true;
+  if(editMode) toggleEditMode();
+  addingHS=true;
   document.getElementById('btn-add-hs').classList.add('active');
-  document.getElementById('add-hs-bar').classList.add('visible');
+  infoBar('🎯 Click pe ecran unde vrei hotspot-ul','yellow');
   document.getElementById('crosshair').classList.add('visible');
   document.getElementById('viewer-wrap').style.cursor='crosshair';
-  document.getElementById('viewer-wrap').addEventListener('click', onViewerClick);
+  document.getElementById('viewer-wrap').addEventListener('click',onPlaceClick);
 }
 
 function stopAddHS() {
-  addingHS = false;
+  addingHS=false;
   document.getElementById('btn-add-hs').classList.remove('active');
-  document.getElementById('add-hs-bar').classList.remove('visible');
+  infoBar(null);
   document.getElementById('crosshair').classList.remove('visible');
   document.getElementById('viewer-wrap').style.cursor='';
-  document.getElementById('viewer-wrap').removeEventListener('click', onViewerClick);
+  document.getElementById('viewer-wrap').removeEventListener('click',onPlaceClick);
 }
 
-function onViewerClick(e) {
-  if(e.target.closest('.hs-el')) return;
-  const wrap = document.getElementById('viewer-wrap');
-  const rect = wrap.getBoundingClientRect();
-  const xf = (e.clientX-rect.left)/rect.width;
-  const yf = (e.clientY-rect.top)/rect.height;
-  const hfov = viewer.getHfov();
-  const vfov = hfov*(rect.height/rect.width);
-  const yaw = viewer.getYaw()+(xf-0.5)*hfov;
-  const pitch = viewer.getPitch()-(yf-0.5)*vfov;
-  pendingHS = {type:'circle', pitch, yaw, size:60, opacity:70, target:''};
-  editHSIdx = null;
+function onPlaceClick(e) {
+  if(e.target.closest('.pnlm-hotspot-base')) return;
+  const wrap=document.getElementById('viewer-wrap');
+  const r=wrap.getBoundingClientRect();
+  const xf=(e.clientX-r.left)/r.width;
+  const yf=(e.clientY-r.top)/r.height;
+  const hfov=viewer.getHfov();
+  const vfov=hfov*(r.height/r.width);
+  pendingHS={
+    pitch:viewer.getPitch()-(yf-0.5)*vfov,
+    yaw:viewer.getYaw()+(xf-0.5)*hfov,
+    type:'circle',size:60,opacity:70,target:''
+  };
+  editIdx=null;
   stopAddHS();
   openHSModal(false);
 }
 
-// ============ MODAL HOTSPOT ============
-function openHSModal(isEdit) {
-  const sel = document.getElementById('hs-target-sel');
-  sel.innerHTML = panorame.filter(p=>p.id!==activeScene)
-    .map(p=>`<option value="${p.id}" ${pendingHS.target===p.id?'selected':''}>${p.titlu}</option>`).join('');
-  if(!pendingHS.target) pendingHS.target = sel.options[0]?.value||'';
+// ===== MUTARE HOTSPOT =====
+function startMove() {
+  closeHSModal();
+  movingHS=true;
+  infoBar('📍 Click pe noua poziție pentru hotspot','blue');
+  document.getElementById('crosshair').classList.add('visible');
+  document.getElementById('viewer-wrap').style.cursor='crosshair';
+  document.getElementById('viewer-wrap').addEventListener('click',onMoveClick);
+}
 
-  document.getElementById('hs-title').textContent = isEdit?'Editează hotspot':'Hotspot nou';
-  document.getElementById('hs-del').style.display = isEdit?'flex':'none';
-  document.getElementById('hs-repos').style.display = isEdit?'flex':'none';
-  document.getElementById('tb-circle').classList.toggle('sel', pendingHS.type==='circle');
-  document.getElementById('tb-arrow').classList.toggle('sel', pendingHS.type==='arrow');
-  document.getElementById('sl-size').value = pendingHS.size||60;
-  document.getElementById('sl-op').value = pendingHS.opacity||70;
-  slUpdate();
+function onMoveClick(e) {
+  if(e.target.closest('.pnlm-hotspot-base')) return;
+  const wrap=document.getElementById('viewer-wrap');
+  const r=wrap.getBoundingClientRect();
+  const xf=(e.clientX-r.left)/r.width;
+  const yf=(e.clientY-r.top)/r.height;
+  const hfov=viewer.getHfov();
+  const vfov=hfov*(r.height/r.width);
+  pendingHS.pitch=viewer.getPitch()-(yf-0.5)*vfov;
+  pendingHS.yaw=viewer.getYaw()+(xf-0.5)*hfov;
+  movingHS=false;
+  infoBar(null);
+  document.getElementById('crosshair').classList.remove('visible');
+  document.getElementById('viewer-wrap').style.cursor='';
+  document.getElementById('viewer-wrap').removeEventListener('click',onMoveClick);
+  // Aplica si salveaza
+  if(editIdx!==null) {
+    HS[activeScene][editIdx]={...pendingHS};
+  }
+  saveAll();
+  initViewer(activeScene);
+  toast('✅ Hotspot mutat!');
+}
+
+// ===== MODAL HOTSPOT =====
+function openHSModal(isEdit) {
+  const sel=document.getElementById('hs-sel');
+  sel.innerHTML=panorame.filter(p=>p.id!==activeScene)
+    .map(p=>`<option value="${p.id}" ${pendingHS.target===p.id?'selected':''}>${p.titlu}</option>`).join('');
+  if(!pendingHS.target&&sel.options[0]) pendingHS.target=sel.options[0].value;
+  document.getElementById('hs-title').textContent=isEdit?'Editează hotspot':'Hotspot nou';
+  document.getElementById('btn-del').style.display=isEdit?'flex':'none';
+  document.getElementById('btn-move').style.display=isEdit?'flex':'none';
+  setType(pendingHS.type||'circle');
+  document.getElementById('sl-sz').value=pendingHS.size||60;
+  document.getElementById('sl-op').value=pendingHS.opacity||70;
+  slUpd();
   document.getElementById('hs-bg').classList.add('open');
 }
 
-function closeHSModal() { document.getElementById('hs-bg').classList.remove('open'); stopAddHS(); }
-
-function setHSType(t) {
-  pendingHS.type=t;
-  document.getElementById('tb-circle').classList.toggle('sel',t==='circle');
-  document.getElementById('tb-arrow').classList.toggle('sel',t==='arrow');
+function closeHSModal() {
+  document.getElementById('hs-bg').classList.remove('open');
+  pendingHS=null; editIdx=null;
 }
 
-function slUpdate() {
-  const sz = document.getElementById('sl-size').value;
-  const op = document.getElementById('sl-op').value;
-  document.getElementById('sv-size').textContent=sz;
+function setType(t) {
+  if(pendingHS) pendingHS.type=t;
+  document.getElementById('tb-c').classList.toggle('sel',t==='circle');
+  document.getElementById('tb-a').classList.toggle('sel',t==='arrow');
+}
+
+function slUpd() {
+  const sz=document.getElementById('sl-sz').value;
+  const op=document.getElementById('sl-op').value;
+  document.getElementById('sv-sz').textContent=sz;
   document.getElementById('sv-op').textContent=op+'%';
   if(pendingHS){pendingHS.size=+sz;pendingHS.opacity=+op;}
 }
 
-function openEditHS(idx) {
-  const h = hotspots[activeScene][idx];
-  pendingHS = {...h};
-  editHSIdx = idx;
-  openHSModal(true);
-}
-
-function repositionHS() {
-  // Salveaza celelalte proprietati si intra in modul plasare
-  pendingHS.target = document.getElementById('hs-target-sel').value;
-  pendingHS.type = pendingHS.type;
-  pendingHS.size = +document.getElementById('sl-size').value;
-  pendingHS.opacity = +document.getElementById('sl-op').value;
-  closeHSModal();
-  // Intra in modul adaugare cu datele existente
-  addingHS = true;
-  document.getElementById('btn-add-hs').classList.add('active');
-  document.getElementById('add-hs-bar').classList.add('visible');
-  document.getElementById('crosshair').classList.add('visible');
-  document.getElementById('viewer-wrap').style.cursor='crosshair';
-  document.getElementById('viewer-wrap').addEventListener('click', onViewerClickRepos);
-}
-
-function onViewerClickRepos(e) {
-  if(e.target.closest('.pnlm-hs-custom')) return;
-  const wrap = document.getElementById('viewer-wrap');
-  const rect = wrap.getBoundingClientRect();
-  const xf=(e.clientX-rect.left)/rect.width;
-  const yf=(e.clientY-rect.top)/rect.height;
-  const hfov=viewer.getHfov();
-  const vfov=hfov*(rect.height/rect.width);
-  pendingHS.pitch = viewer.getPitch()-(yf-0.5)*vfov;
-  pendingHS.yaw = viewer.getYaw()+(xf-0.5)*hfov;
-  stopAddHS();
-  document.getElementById('viewer-wrap').removeEventListener('click', onViewerClickRepos);
-  // Aplica direct
-  if(editHSIdx!==null) { hotspots[activeScene][editHSIdx]={...pendingHS}; }
-  saveAll();
-  rebuildViewer(activeScene);
-  toast('✅ Hotspot repoziționat!');
-}
-
 function confirmHS() {
-  pendingHS.target = document.getElementById('hs-target-sel').value;
-  pendingHS.id = pendingHS.id||('hs_'+Date.now());
-  if(editHSIdx!==null) { hotspots[activeScene][editHSIdx]={...pendingHS}; }
-  else { hotspots[activeScene].push({...pendingHS}); }
+  if(!pendingHS) return;
+  pendingHS.target=document.getElementById('hs-sel').value;
+  if(editIdx!==null) {
+    HS[activeScene][editIdx]={...pendingHS};
+  } else {
+    HS[activeScene].push({...pendingHS});
+  }
   closeHSModal();
   saveAll();
-  rebuildViewer(activeScene); // rebuild ca sa apara hotspot-urile
+  initViewer(activeScene);
 }
 
-function deleteHS() {
-  if(editHSIdx!==null) { hotspots[activeScene].splice(editHSIdx,1); }
-  closeHSModal(); saveAll(); rebuildViewer(activeScene);
+function delHS() {
+  if(editIdx===null) return;
+  HS[activeScene].splice(editIdx,1);
+  closeHSModal();
+  saveAll();
+  initViewer(activeScene);
+  toast('🗑️ Hotspot șters!');
 }
 
-function rebuildViewer(id) {
-  viewer.destroy();
-  document.getElementById('viewer').innerHTML = '';
-  viewer = pannellum.viewer('viewer', {
-    default: { firstScene:id, autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
-    scenes: buildScenes()
-  });
-  attachViewerEvents();
-  activeScene = id;
-  document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
-  updateSidebar();
-}
-
-// ============ INITIAL VIEW ============
+// ===== INITIAL VIEW =====
 function startIV() {
   if(ivMode) {
-    // Salveaza
-    ivMode = false;
+    ivMode=false;
     document.getElementById('btn-iv').classList.remove('active');
-    document.getElementById('iv-bar').classList.remove('visible');
-    initView[activeScene] = { pitch:viewer.getPitch(), yaw:viewer.getYaw(), hfov:viewer.getHfov() };
+    document.getElementById('btn-iv').textContent='👁️ Vedere inițială';
+    infoBar(null);
+    IV[activeScene]={pitch:viewer.getPitch(),yaw:viewer.getYaw(),hfov:viewer.getHfov()};
     saveAll();
-    toast('✅ Vedere inițială salvată pentru '+panorame.find(p=>p.id===activeScene)?.titlu);
+    toast('✅ Vedere inițială salvată!');
   } else {
-    ivMode = true;
+    ivMode=true;
     document.getElementById('btn-iv').classList.add('active');
-    document.getElementById('iv-bar').classList.add('visible');
-    document.getElementById('btn-iv').textContent = '✅ Salvează vedere inițială';
+    document.getElementById('btn-iv').textContent='✅ Salvează vederea';
+    infoBar('👁️ Orientează panorama, apoi apasă "Salvează vederea"','blue');
   }
 }
 
-// ============ PLAN ============
-let planDrag = { active:false, dot:null, pano:null, sx:0, sy:0, sl:0, st:0, moved:false };
+// ===== PLAN =====
+let planDrag={active:false,dot:null,pano:null,sx:0,sy:0,sl:0,st:0,moved:false};
 
-document.addEventListener('mousemove', e=>{
+document.addEventListener('mousemove',e=>{
   if(!planDrag.active) return;
-  const dx=e.clientX-planDrag.sx, dy=e.clientY-planDrag.sy;
+  const dx=e.clientX-planDrag.sx,dy=e.clientY-planDrag.sy;
   if(Math.abs(dx)>5||Math.abs(dy)>5) planDrag.moved=true;
   if(!planDrag.moved) return;
-  const wrap=document.getElementById('plan-img-wrap');
-  const r=wrap.getBoundingClientRect();
+  const r=document.getElementById('plan-wrap').getBoundingClientRect();
   planDrag.pano.px=Math.max(0,Math.min(100,planDrag.sl+dx/r.width*100));
   planDrag.pano.py=Math.max(0,Math.min(100,planDrag.st+dy/r.height*100));
   planDrag.dot.style.left=planDrag.pano.px+'%';
   planDrag.dot.style.top=planDrag.pano.py+'%';
 });
 
-document.addEventListener('mouseup', e=>{
+document.addEventListener('mouseup',e=>{
   if(!planDrag.active) return;
-  const wasMoved = planDrag.moved;
+  const moved=planDrag.moved;
   planDrag.active=false; planDrag.moved=false;
-  if(!wasMoved && planDrag.pano) {
-    goToScene(planDrag.pano.id);
-    closePlan();
-  }
+  if(!moved&&planDrag.pano){ goToScene(planDrag.pano.id); closePlan(); }
   planDrag.dot=null; planDrag.pano=null;
 });
+
 function openPlan() {
   document.getElementById('plan-bg').classList.add('open');
-  renderPlanDots();
+  renderDots();
 }
 function closePlan() { document.getElementById('plan-bg').classList.remove('open'); }
 
-function renderPlanDots() {
+function renderDots() {
   document.querySelectorAll('.pdot').forEach(d=>d.remove());
-  const wrap = document.getElementById('plan-img-wrap');
-  panorame.forEach(p => {
-    const d = document.createElement('div');
+  const wrap=document.getElementById('plan-wrap');
+  panorame.forEach(p=>{
+    const d=document.createElement('div');
     d.className='pdot'+(p.id===activeScene?' active':'');
     d.id='pd-'+p.id;
     d.style.left=p.px+'%'; d.style.top=p.py+'%';
     d.style.width=p.pm+'px'; d.style.height=p.pm+'px';
     d.title=p.titlu;
+    d.addEventListener('mousedown',e=>{
+      planDrag.active=true; planDrag.moved=false;
+      planDrag.dot=d; planDrag.pano=p;
+      planDrag.sx=e.clientX; planDrag.sy=e.clientY;
+      planDrag.sl=p.px; planDrag.st=p.py;
+      e.preventDefault(); e.stopPropagation();
+    });
+    d.addEventListener('wheel',e=>{
+      e.preventDefault();
+      p.pm=Math.max(12,Math.min(50,p.pm-Math.sign(e.deltaY)*2));
+      d.style.width=p.pm+'px'; d.style.height=p.pm+'px';
+    },{passive:false});
     wrap.appendChild(d);
-    enableDotDrag(d,p,wrap);
   });
 }
 
-function enableDotDrag(dot, pano, wrap) {
-  dot.addEventListener('mousedown',e=>{
-    planDrag.active=true; planDrag.moved=false;
-    planDrag.dot=dot; planDrag.pano=pano;
-    planDrag.sx=e.clientX; planDrag.sy=e.clientY;
-    planDrag.sl=pano.px; planDrag.st=pano.py;
-    e.preventDefault(); e.stopPropagation();
-  });
-  dot.addEventListener('wheel',e=>{
-    e.preventDefault();
-    pano.pm=Math.max(12,Math.min(50,pano.pm-Math.sign(e.deltaY)*2));
-    dot.style.width=pano.pm+'px'; dot.style.height=pano.pm+'px';
-  },{passive:false});
-}
-
-// Init
-drawHS();
+// ===== INIT =====
+load();
+buildSidebar();
+initViewer('hol01');
 </script>
 </body>
 </html>
