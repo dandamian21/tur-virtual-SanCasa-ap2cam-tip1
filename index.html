@@ -84,9 +84,14 @@
     .pnlm-hs-custom {
       cursor: pointer;
       transform: translate(-50%, -50%);
+      background: none !important;
+      border: none !important;
+      width: auto !important;
+      height: auto !important;
     }
     .pnlm-hs-custom:hover svg { filter: brightness(1.4); }
-    .pnlm-hotspot-base { display: none !important; }
+    /* Ascunde doar tooltip-ul default, nu containerul */
+    .pnlm-hs-custom > .pnlm-tooltip { display: none !important; }
 
     /* Hotspot-uri custom SVG */
     .hs-el {
@@ -178,7 +183,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v11</div>
+  <div id="version">v12</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -403,6 +408,7 @@ function buildScenes() {
   panorame.forEach(p => {
     const iv = initView[p.id] || {pitch:0,yaw:0,hfov:100};
     const hs = (hotspots[p.id]||[]).map((h,i) => ({
+      type: 'custom',
       pitch: h.pitch,
       yaw: h.yaw,
       cssClass: 'pnlm-hs-custom',
