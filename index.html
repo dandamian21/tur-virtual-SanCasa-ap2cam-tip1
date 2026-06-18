@@ -245,9 +245,9 @@ const panorame = [
   {id:"buc02",  titlu:"Bucătărie-02", fisier:"11_ap.2cam-Buc-02-Exp-0.5.jpg",  px:88.0, py:80.0, pm:22},
   {id:"dorm01", titlu:"Dormitor-01",  fisier:"12_ap.2cam-Dorm-01-Exp-0.jpg",   px:14.0, py:25.0, pm:22},
   {id:"dorm02", titlu:"Dormitor-02",  fisier:"13_ap.2cam-Dorm-02-Exp-0.jpg",   px:22.0, py:38.0, pm:22},
-  {id:"baie01", titlu:"Baie-01",      fisier:"14_ap.2cam-Baie-01-Exp-1.jpg",   px:10.0, py:72.0, pm:22},
-  {id:"baie02", titlu:"Baie-02",      fisier:"15_ap.2cam-Baie-02-Exp-1.jpg",   px:18.0, py:78.0, pm:22},
-  {id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03-Exp-1.jpg",   px:24.0, py:68.0, pm:22},
+  {id:"baie01", titlu:"Baie-01",      fisier:"14_ap.2cam-Baie-01-Exp 1.jpg",   px:10.0, py:72.0, pm:22},
+  {id:"baie02", titlu:"Baie-02",      fisier:"15_ap.2cam-Baie-02-Exp 1.jpg",   px:18.0, py:78.0, pm:22},
+  {id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03-Exp 1.jpg",   px:24.0, py:68.0, pm:22},
 ];
 
 // ============ STATE ============
@@ -314,6 +314,16 @@ viewer.on('scenechange', function(id) {
   document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
   updateSidebar();
   drawHS();
+  // Aplica vederea initiala salvata
+  if(initView[id]) {
+    setTimeout(function() {
+      try {
+        viewer.setPitch(initView[id].pitch);
+        viewer.setYaw(initView[id].yaw);
+        viewer.setHfov(initView[id].hfov);
+      } catch(e) {}
+    }, 50);
+  }
 });
 
 // Opreste zoom
