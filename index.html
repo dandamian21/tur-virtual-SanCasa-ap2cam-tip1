@@ -9,310 +9,585 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #111; font-family: 'Segoe UI', sans-serif; color: #fff; height: 100vh; overflow: hidden; }
-
     #viewer { width: 100%; height: 100vh; }
 
-    /* Titlu panorama */
+    /* Ascunde zoom Pannellum */
+    .pnlm-zoom-controls { display: none !important; }
+
     #pano-title {
-      position: absolute;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      padding: 7px 22px;
-      border-radius: 20px;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      pointer-events: none;
-      z-index: 100;
-      backdrop-filter: blur(6px);
+      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.55); color: #fff; padding: 7px 22px;
+      border-radius: 20px; font-size: 15px; font-weight: 600;
+      pointer-events: none; z-index: 100; backdrop-filter: blur(6px);
     }
 
-    /* Buton plan */
-    #btn-plan {
-      position: absolute;
-      bottom: 24px;
-      right: 24px;
-      background: rgba(255,255,255,0.15);
-      border: 1.5px solid rgba(255,255,255,0.4);
-      color: #fff;
-      padding: 9px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      z-index: 200;
-      backdrop-filter: blur(8px);
-      transition: background 0.2s;
-      user-select: none;
+    /* Toolbar jos */
+    #toolbar {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; z-index: 200;
     }
-    #btn-plan:hover { background: rgba(255,255,255,0.28); }
+    .tb-btn {
+      background: rgba(20,20,20,0.85); border: 1.5px solid rgba(255,255,255,0.25);
+      color: #fff; padding: 9px 16px; border-radius: 10px; cursor: pointer;
+      font-size: 12px; font-weight: 600; backdrop-filter: blur(8px);
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .tb-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); }
+    .tb-btn.active { background: rgba(240,165,0,0.3); border-color: #f0a500; color: #f0a500; }
+    .tb-btn.save-btn { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #22c55e; }
+    .tb-btn.save-btn:hover { background: rgba(34,197,94,0.35); }
 
-    /* Panel plan - overlay mare */
-    #plan-panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(90vw, 900px);
-      max-height: 90vh;
-      background: rgba(15,15,15,0.97);
-      border-radius: 18px;
-      padding: 20px;
-      z-index: 500;
-      display: none;
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
-    }
-    #plan-panel.open { display: block; }
-
-    /* Overlay inchidere click afara */
-    #plan-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 499;
-    }
+    /* Overlay plan */
+    #plan-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 499; }
     #plan-overlay.open { display: block; }
 
-    #plan-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
+    #plan-panel {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: min(92vw, 920px); max-height: 92vh;
+      background: rgba(12,12,12,0.97); border-radius: 18px; padding: 18px;
+      z-index: 500; border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8); overflow-y: auto;
     }
+    #plan-panel.open { display: block; }
+    #plan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    #plan-header h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; }
+    #plan-header-btns { display: flex; gap: 8px; align-items: center; }
+    .ph-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
+    }
+    .ph-btn.green { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #22c55e; }
+    .ph-btn.close { width: 30px; height: 30px; padding: 0; border-radius: 50%; font-size: 15px; display:flex; align-items:center; justify-content:center; }
 
-    #plan-panel h3 {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #aaa;
-      margin: 0;
-    }
+    #plan-container { position: relative; width: 100%; user-select: none; }
+    #plan-container img { width: 100%; border-radius: 10px; display: block; pointer-events: none; }
 
-    #btn-close-plan {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-    #btn-close-plan:hover { background: rgba(255,255,255,0.25); }
-
-    #plan-container {
-      position: relative;
-      width: 100%;
-    }
-    #plan-container img {
-      width: 100%;
-      border-radius: 8px;
-      display: block;
-    }
-
-    /* Butoane pe plan */
     .plan-dot {
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: 2px solid #fff;
-      cursor: pointer;
-      transform: translate(-50%, -50%);
-      transition: background 0.15s, transform 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 700;
-      color: #fff;
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 2.5px solid rgba(255,255,255,0.8);
+      cursor: pointer; transform: translate(-50%,-50%);
+      transition: box-shadow 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.9);
     }
-    .plan-dot:hover { background: rgba(255,255,255,0.5); transform: translate(-50%,-50%) scale(1.2); }
-    .plan-dot.active {
-      background: #f0a500;
-      border-color: #f0a500;
-      box-shadow: 0 0 0 4px rgba(240,165,0,0.35);
-      transform: translate(-50%,-50%) scale(1.15);
-    }
+    .plan-dot:hover { box-shadow: 0 0 0 4px rgba(255,255,255,0.25); }
+    .plan-dot.active { background: rgba(240,165,0,0.5); border-color: #f0a500; box-shadow: 0 0 0 5px rgba(240,165,0,0.3); }
 
-    /* Modul editare pozitii */
-    #btn-edit {
-      position: absolute;
-      bottom: 24px;
-      right: 130px;
-      background: rgba(255,255,255,0.1);
-      border: 1.5px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 9px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      z-index: 200;
-      backdrop-filter: blur(8px);
-      transition: background 0.2s;
-    }
-    #btn-edit:hover { background: rgba(255,165,0,0.3); border-color: #f0a500; }
-    #btn-edit.editing { background: rgba(240,165,0,0.4); border-color: #f0a500; color: #f0a500; }
+    #plan-edit-hint { font-size: 11px; color: #888; margin-top: 10px; text-align: center; }
 
-    #edit-hint {
-      display: none;
-      font-size: 10px;
-      color: #f0a500;
-      margin-top: 8px;
-      text-align: center;
-      line-height: 1.4;
+    /* Editor hotspot-uri */
+    #hs-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 599; }
+    #hs-overlay.open { display: block; }
+    #hs-panel {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 420px; background: rgba(12,12,12,0.98); border-radius: 16px; padding: 20px;
+      z-index: 600; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     }
-    #edit-hint.visible { display: block; }
+    #hs-panel.open { display: block; }
+    #hs-panel h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 16px; }
+    .hs-row { margin-bottom: 14px; }
+    .hs-row label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .hs-row select, .hs-row input[type=range], .hs-row input[type=number] {
+      width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; padding: 8px 10px; border-radius: 8px; font-size: 13px;
+    }
+    .hs-row select option { background: #1a1a1a; }
+    .hs-type-btns { display: flex; gap: 8px; }
+    .hs-type-btn {
+      flex: 1; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700;
+      border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #aaa;
+      text-align: center; transition: all 0.15s;
+    }
+    .hs-type-btn.sel { border-color: #f0a500; background: rgba(240,165,0,0.15); color: #f0a500; }
+    .hs-slider-row { display: flex; align-items: center; gap: 10px; }
+    .hs-slider-row input { flex: 1; }
+    .hs-slider-val { min-width: 35px; text-align: right; font-size: 13px; color: #f0a500; }
+    .hs-panel-btns { display: flex; gap: 8px; margin-top: 18px; }
+    .hs-panel-btn {
+      flex: 1; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;
+      border: none; transition: all 0.15s;
+    }
+    .hs-panel-btn.del { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
+    .hs-panel-btn.ok { background: #f0a500; color: #111; }
+    .hs-panel-btn.cancel { background: rgba(255,255,255,0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.2); }
 
-    #btn-export {
-      display: none;
-      width: 100%;
-      margin-top: 10px;
-      background: #f0a500;
-      color: #111;
-      border: none;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+    /* Hotspot-uri custom */
+    .hs-custom {
+      position: absolute; cursor: pointer; transform: translate(-50%,-50%);
+      pointer-events: all; transition: opacity 0.2s;
     }
-    #btn-export.visible { display: block; }
+    .hs-custom.type-circle svg circle { transition: all 0.15s; }
+    .hs-custom:hover svg circle { stroke-opacity: 1 !important; fill-opacity: 0.35 !important; }
+    .hs-custom.type-arrow svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+    .hs-custom:hover svg { filter: drop-shadow(0 2px 10px rgba(255,255,255,0.4)); }
 
-    #export-output {
-      display: none;
-      margin-top: 8px;
-      background: #000;
-      color: #0f0;
-      font-size: 10px;
-      padding: 8px;
-      border-radius: 6px;
-      max-height: 120px;
-      overflow-y: auto;
-      word-break: break-all;
-      white-space: pre-wrap;
+    /* Indicator editare hotspot pe viewer */
+    #hs-edit-crosshair {
+      display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none; z-index: 150;
     }
-    #export-output.visible { display: block; }
+    #hs-edit-crosshair.visible { display: block; }
+    #hs-edit-bar {
+      display: none; position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+      background: rgba(240,165,0,0.9); color: #111; padding: 8px 20px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; z-index: 150; pointer-events: none;
+    }
+    #hs-edit-bar.visible { display: block; }
+
+    /* Initial View editor */
+    #iv-bar {
+      display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+      background: rgba(20,20,20,0.92); border: 1.5px solid #f0a500; color: #f0a500;
+      padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 700;
+      z-index: 150; pointer-events: none; backdrop-filter: blur(8px);
+    }
+    #iv-bar.visible { display: block; }
+
+    /* Toast notificare */
+    #toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: rgba(34,197,94,0.9); color: #fff; padding: 10px 24px;
+      border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Pannellum hotspot override - ascunde cele default */
+    .pnlm-hotspot-base { display: none !important; }
   </style>
 </head>
 <body>
 
 <div id="viewer"></div>
 <div id="pano-title">Hol-01</div>
+<div id="hs-edit-bar">🎯 Orientează panorama, apoi click pe viewer pentru a plasa hotspot-ul</div>
+<div id="iv-bar">👁️ Orientează panorama spre vederea inițială dorită</div>
 
-<button id="btn-edit" onclick="toggleEdit()">✏️ Editează plan</button>
-<button id="btn-plan" onclick="togglePlan()">🗺️ Plan</button>
+<!-- Crosshair pentru plasare hotspot -->
+<div id="hs-edit-crosshair">
+  <svg width="40" height="40" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="18" fill="none" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="20" y1="8" x2="20" y2="32" stroke="#f0a500" stroke-width="1.5"/>
+    <line x1="8" y1="20" x2="32" y2="20" stroke="#f0a500" stroke-width="1.5"/>
+  </svg>
+</div>
 
+<!-- Toolbar -->
+<div id="toolbar">
+  <button class="tb-btn" id="btn-plan-open" onclick="togglePlan()">🗺️ Plan</button>
+  <button class="tb-btn" id="btn-add-hs" onclick="startAddHotspot()">➕ Adaugă hotspot</button>
+  <button class="tb-btn" id="btn-iv" onclick="toggleIVMode()">👁️ Vedere inițială</button>
+  <button class="tb-btn save-btn" onclick="saveAll()">💾 Salvează tot</button>
+</div>
+
+<!-- Plan overlay -->
 <div id="plan-overlay" onclick="togglePlan()"></div>
 <div id="plan-panel">
   <div id="plan-header">
     <h3>Plan apartament</h3>
-    <button id="btn-close-plan" onclick="togglePlan()">✕</button>
+    <div id="plan-header-btns">
+      <button class="ph-btn green" onclick="savePlanPositions()">💾 Salvează pozițiile</button>
+      <button class="ph-btn close" onclick="togglePlan()">✕</button>
+    </div>
   </div>
   <div id="plan-container">
     <img id="plan-img" src="00_ap.2cam-TOP-01.jpg" alt="Plan apartament">
-    <!-- Punctele de pe plan sunt generate dinamic de JS -->
   </div>
-  <div id="edit-hint">Trage punctele pentru a le repoziționa.<br>Scroll pe punct = schimbă mărimea.</div>
-  <button id="btn-export" onclick="exportPositions()">📋 Copiază pozițiile noi</button>
-  <div id="export-output"></div>
+  <div id="plan-edit-hint">Trage punctele pentru a le repoziționa • Scroll pe punct = schimbă mărimea</div>
 </div>
+
+<!-- Editor hotspot -->
+<div id="hs-overlay" onclick="cancelHsEdit()"></div>
+<div id="hs-panel">
+  <h3 id="hs-panel-title">Hotspot nou</h3>
+  <div class="hs-row">
+    <label>Tip</label>
+    <div class="hs-type-btns">
+      <div class="hs-type-btn sel" id="hs-type-circle" onclick="selectHsType('circle')">⭕ Cerc (pardoseală)</div>
+      <div class="hs-type-btn" id="hs-type-arrow" onclick="selectHsType('arrow')">⬆️ Săgeată (ușă)</div>
+    </div>
+  </div>
+  <div class="hs-row">
+    <label>Duce către</label>
+    <select id="hs-target"></select>
+  </div>
+  <div class="hs-row">
+    <label>Mărime</label>
+    <div class="hs-slider-row">
+      <input type="range" id="hs-size" min="30" max="120" value="60" oninput="updateHsPreview()">
+      <span class="hs-slider-val" id="hs-size-val">60</span>
+    </div>
+  </div>
+  <div class="hs-row">
+    <label>Transparență</label>
+    <div class="hs-slider-row">
+      <input type="range" id="hs-opacity" min="10" max="100" value="70" oninput="updateHsPreview()">
+      <span class="hs-slider-val" id="hs-opacity-val">70%</span>
+    </div>
+  </div>
+  <div class="hs-panel-btns">
+    <button class="hs-panel-btn cancel" onclick="cancelHsEdit()">Anulează</button>
+    <button class="hs-panel-btn del" id="hs-del-btn" onclick="deleteHotspot()" style="display:none">🗑️ Șterge</button>
+    <button class="hs-panel-btn ok" onclick="confirmHotspot()">✓ Confirmă</button>
+  </div>
+</div>
+
+<div id="toast"></div>
 
 <script>
 // ============================================================
-// CONFIGURARE TUR
-// Editează titlurile și ordinea panoramelor după preferință
+// DATE TUR — editează titlurile după preferință
 // ============================================================
 const panorame = [
-  { id: "hol01",     titlu: "Hol-01",        fisier: "01_ap.2cam-Hol-01-Exp-0.5.jpg",   planX: 47.5, planY: 62.0, marime: 22 },
-  { id: "hol02",     titlu: "Hol-02",        fisier: "02_ap.2cam-Hol-02-Exp-0.5.jpg",   planX: 44.0, planY: 72.0, marime: 22 },
-  { id: "hol03",     titlu: "Hol-03",        fisier: "03_ap.2cam-Hol-03-Exp-0.5.jpg",   planX: 50.0, planY: 72.0, marime: 22 },
-  { id: "liv01",     titlu: "Living-01",     fisier: "04_ap.2cam-LIV-01-Exp-0.jpg",     planX: 45.0, planY: 35.0, marime: 22 },
-  { id: "liv02",     titlu: "Living-02",     fisier: "05_ap.2cam-LIV-02-Exp-0.jpg",     planX: 52.0, planY: 25.0, marime: 22 },
-  { id: "liv03",     titlu: "Living-03",     fisier: "06_ap.2cam-LIV-03-Exp-0.jpg",     planX: 40.0, planY: 22.0, marime: 22 },
-  { id: "liv04",     titlu: "Living-04",     fisier: "07_ap.2cam-LIV-04-Exp-0.jpg",     planX: 35.0, planY: 32.0, marime: 22 },
-  { id: "ter01",     titlu: "Terasă-01",     fisier: "08_ap.2cam-TER-01-Exp-0.jpg",     planX: 82.0, planY: 22.0, marime: 22 },
-  { id: "ter02",     titlu: "Terasă-02",     fisier: "09_ap.2cam-TER-02-Exp-0.5.jpg",   planX: 90.0, planY: 32.0, marime: 22 },
-  { id: "buc01",     titlu: "Bucătărie-01",  fisier: "10_ap.2cam-Buc-01-Exp-0.5.jpg",   planX: 78.0, planY: 72.0, marime: 22 },
-  { id: "buc02",     titlu: "Bucătărie-02",  fisier: "11_ap.2cam-Buc-02-Exp-0.5.jpg",   planX: 88.0, planY: 80.0, marime: 22 },
-  { id: "dorm01",    titlu: "Dormitor-01",   fisier: "12_ap.2cam-Dorm-01-Exp-0.jpg",    planX: 14.0, planY: 25.0, marime: 22 },
-  { id: "dorm02",    titlu: "Dormitor-02",   fisier: "13_ap.2cam-Dorm-02-Exp-0.jpg",    planX: 22.0, planY: 38.0, marime: 22 },
-  { id: "baie01",    titlu: "Baie-01",       fisier: "14_ap.2cam-Baie-01-Exp-1.jpg",    planX: 10.0, planY: 72.0, marime: 22 },
-  { id: "baie02",    titlu: "Baie-02",       fisier: "15_ap.2cam-Baie-02-Exp-1.jpg",    planX: 18.0, planY: 78.0, marime: 22 },
-  { id: "baie03",    titlu: "Baie-03",       fisier: "16_ap.2cam-Baie-03-Exp-1.jpg",    planX: 24.0, planY: 68.0, marime: 22 },
+  { id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  planX:47.5, planY:62.0, marime:22 },
+  { id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  planX:44.0, planY:72.0, marime:22 },
+  { id:"hol03",  titlu:"Hol-03",       fisier:"03_ap.2cam-Hol-03-Exp-0.5.jpg",  planX:50.0, planY:72.0, marime:22 },
+  { id:"liv01",  titlu:"Living-01",    fisier:"04_ap.2cam-LIV-01-Exp-0.jpg",    planX:45.0, planY:35.0, marime:22 },
+  { id:"liv02",  titlu:"Living-02",    fisier:"05_ap.2cam-LIV-02-Exp-0.jpg",    planX:52.0, planY:25.0, marime:22 },
+  { id:"liv03",  titlu:"Living-03",    fisier:"06_ap.2cam-LIV-03-Exp-0.jpg",    planX:40.0, planY:22.0, marime:22 },
+  { id:"liv04",  titlu:"Living-04",    fisier:"07_ap.2cam-LIV-04-Exp-0.jpg",    planX:35.0, planY:32.0, marime:22 },
+  { id:"ter01",  titlu:"Terasă-01",    fisier:"08_ap.2cam-TER-01-Exp-0.jpg",    planX:82.0, planY:22.0, marime:22 },
+  { id:"ter02",  titlu:"Terasă-02",    fisier:"09_ap.2cam-TER-02-Exp-0.5.jpg",  planX:90.0, planY:32.0, marime:22 },
+  { id:"buc01",  titlu:"Bucătărie-01", fisier:"10_ap.2cam-Buc-01-Exp-0.5.jpg",  planX:78.0, planY:72.0, marime:22 },
+  { id:"buc02",  titlu:"Bucătărie-02", fisier:"11_ap.2cam-Buc-02-Exp-0.5.jpg",  planX:88.0, planY:80.0, marime:22 },
+  { id:"dorm01", titlu:"Dormitor-01",  fisier:"12_ap.2cam-Dorm-01-Exp-0.jpg",   planX:14.0, planY:25.0, marime:22 },
+  { id:"dorm02", titlu:"Dormitor-02",  fisier:"13_ap.2cam-Dorm-02-Exp-0.jpg",   planX:22.0, planY:38.0, marime:22 },
+  { id:"baie01", titlu:"Baie-01",      fisier:"14_ap.2cam-Baie-01-Exp-1.jpg",   planX:10.0, planY:72.0, marime:22 },
+  { id:"baie02", titlu:"Baie-02",      fisier:"15_ap.2cam-Baie-02-Exp-1.jpg",   planX:18.0, planY:78.0, marime:22 },
+  { id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03-Exp-1.jpg",   planX:24.0, planY:68.0, marime:22 },
 ];
 
-// ============================================================
-// HOTSPOT-URI DE NAVIGARE
-// De la -> Catre (editează după ce testezi turul)
-// ============================================================
-const legaturi = [
-  ["hol01", "hol02"], ["hol01", "hol03"],
-  ["hol02", "hol03"], ["hol02", "liv01"],
-  ["hol03", "liv01"], ["hol03", "baie01"],
-  ["hol03", "dorm01"],
-  ["liv01", "liv02"], ["liv01", "liv03"], ["liv01", "liv04"],
-  ["liv02", "liv03"], ["liv02", "ter01"],
-  ["liv03", "liv04"], ["liv03", "ter01"],
-  ["liv04", "dorm01"],
-  ["ter01", "ter02"],
-  ["buc01", "buc02"], ["buc01", "hol02"],
-  ["dorm01", "dorm02"],
-  ["baie01", "baie02"], ["baie01", "baie03"],
-];
+// hotspots[sceneId] = [ { id, type, pitch, yaw, targetId, size, opacity }, ... ]
+let hotspots = {};
+// initialView[sceneId] = { pitch, yaw, hfov }
+let initialView = {};
+
+panorame.forEach(p => { hotspots[p.id] = []; });
 
 // ============================================================
-// CONSTRUIRE CONFIG PANNELLUM
+// LOAD / SAVE din localStorage
 // ============================================================
-let panoramaActiva = "hol01";
+function loadData() {
+  try {
+    const hs = localStorage.getItem('tur_hotspots');
+    const iv = localStorage.getItem('tur_initialView');
+    const pl = localStorage.getItem('tur_planPositions');
+    if (hs) hotspots = JSON.parse(hs);
+    if (iv) initialView = JSON.parse(iv);
+    if (pl) {
+      const saved = JSON.parse(pl);
+      saved.forEach(s => {
+        const p = panorame.find(x => x.id === s.id);
+        if (p) { p.planX = s.planX; p.planY = s.planY; p.marime = s.marime; }
+      });
+    }
+  } catch(e) {}
+}
 
-function buildConfig() {
+function saveAll() {
+  localStorage.setItem('tur_hotspots', JSON.stringify(hotspots));
+  localStorage.setItem('tur_initialView', JSON.stringify(initialView));
+  savePlanPositions(true);
+  showToast('✅ Toate modificările salvate!');
+}
+
+function savePlanPositions(silent) {
+  const data = panorame.map(p => ({ id: p.id, planX: p.planX, planY: p.planY, marime: p.marime }));
+  localStorage.setItem('tur_planPositions', JSON.stringify(data));
+  if (!silent) showToast('✅ Pozițiile pe plan salvate!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// PANNELLUM VIEWER
+// ============================================================
+let panoramaActiva = 'hol01';
+
+function getIV(id) {
+  return initialView[id] || { pitch: 0, yaw: 0, hfov: 100 };
+}
+
+function buildScenes() {
   const scenes = {};
   panorame.forEach(p => {
-    const hotspots = [];
-    legaturi.forEach(([a, b]) => {
-      if (a === p.id) hotspots.push({ type: "scene", sceneId: b, text: panorame.find(x=>x.id===b).titlu, pitch: -20, yaw: 0 });
-      if (b === p.id) hotspots.push({ type: "scene", sceneId: a, text: panorame.find(x=>x.id===a).titlu, pitch: -20, yaw: 0 });
-    });
+    const iv = getIV(p.id);
     scenes[p.id] = {
       title: p.titlu,
       panorama: p.fisier,
-      hotSpots: hotspots
+      pitch: iv.pitch, yaw: iv.yaw, hfov: iv.hfov,
+      hotSpots: []
     };
   });
-  return {
-    default: { firstScene: "hol01", autoLoad: true, showControls: true, compass: false },
-    scenes
-  };
+  return scenes;
 }
 
-const viewer = pannellum.viewer('viewer', buildConfig());
+loadData();
 
-viewer.on('scenechange', function(sceneId) {
-  panoramaActiva = sceneId;
-  const p = panorame.find(x => x.id === sceneId);
-  document.getElementById('pano-title').textContent = p ? p.titlu : '';
-  updateDots();
+const viewer = pannellum.viewer('viewer', {
+  default: { firstScene: 'hol01', autoLoad: true, showControls: false, mouseZoom: false, keyboardZoom: false },
+  scenes: buildScenes()
 });
 
+viewer.on('scenechange', id => {
+  panoramaActiva = id;
+  document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu || '';
+  updateDots();
+  renderHotspots();
+});
+
+// Dezactivează zoom complet
+document.getElementById('viewer').addEventListener('wheel', e => e.stopPropagation(), true);
+
 // ============================================================
-// PLAN - generare puncte
+// HOTSPOT-URI CUSTOM (randate ca SVG overlay pe viewer)
 // ============================================================
+function renderHotspots() {
+  // Sterge hotspot-urile custom existente
+  document.querySelectorAll('.hs-custom').forEach(el => el.remove());
+
+  const sceneHs = hotspots[panoramaActiva] || [];
+  const viewerEl = document.getElementById('viewer');
+
+  sceneHs.forEach((hs, idx) => {
+    const el = document.createElement('div');
+    el.className = 'hs-custom type-' + hs.type;
+    el.dataset.idx = idx;
+    el.style.opacity = (hs.opacity || 70) / 100;
+
+    if (hs.type === 'circle') {
+      const s = hs.size || 60;
+      el.innerHTML = `<svg width="${s}" height="${s}" viewBox="0 0 60 60">
+        <circle cx="30" cy="30" r="26" fill="rgba(255,255,255,0.18)" fill-opacity="0.18" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-opacity="0.85"/>
+        <circle cx="30" cy="30" r="10" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+      </svg>`;
+    } else {
+      const s = hs.size || 60;
+      el.innerHTML = `<svg width="${s*0.7}" height="${s}" viewBox="0 0 42 60">
+        <polygon points="21,4 40,30 28,30 28,56 14,56 14,30 2,30" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
+    // Positionare bazata pe pitch/yaw viewer
+    positionHsElement(el, hs.pitch, hs.yaw, viewerEl);
+
+    el.onclick = (e) => { e.stopPropagation(); openEditHotspot(idx); };
+    el.addEventListener('dblclick', e => { e.stopPropagation(); viewer.loadScene(hs.targetId); });
+
+    // Click normal = navigare (daca nu editam)
+    el.onclick = (e) => {
+      e.stopPropagation();
+      if (addingHotspot) return;
+      if (e.detail === 1) {
+        // single click = navigheza
+        setTimeout(() => {
+          if (!el.dataset.dbl) viewer.loadScene(hs.targetId);
+          el.dataset.dbl = '';
+        }, 200);
+      }
+    };
+    el.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      el.dataset.dbl = '1';
+      openEditHotspot(idx);
+    });
+
+    viewerEl.appendChild(el);
+  });
+}
+
+function positionHsElement(el, pitch, yaw, container) {
+  // Converti pitch/yaw la coordonate ecran aproximative
+  const rect = container.getBoundingClientRect();
+  const currentYaw = viewer.getYaw();
+  const currentPitch = viewer.getPitch();
+  const hfov = viewer.getHfov();
+
+  const dYaw = yaw - currentYaw;
+  const dPitch = pitch - currentPitch;
+
+  const xFrac = 0.5 + (dYaw / hfov);
+  const vfov = hfov * (rect.height / rect.width);
+  const yFrac = 0.5 - (dPitch / vfov);
+
+  el.style.position = 'absolute';
+  el.style.left = (xFrac * 100) + '%';
+  el.style.top = (yFrac * 100) + '%';
+  el.style.display = (xFrac < -0.1 || xFrac > 1.1 || yFrac < -0.1 || yFrac > 1.1) ? 'none' : 'block';
+}
+
+// Re-render hotspot-uri la fiecare frame (pentru a urmari rotatia)
+function animateHotspots() {
+  if (!addingHotspot) {
+    const els = document.querySelectorAll('.hs-custom');
+    const viewerEl = document.getElementById('viewer');
+    const sceneHs = hotspots[panoramaActiva] || [];
+    els.forEach((el, i) => {
+      if (sceneHs[i]) positionHsElement(el, sceneHs[i].pitch, sceneHs[i].yaw, viewerEl);
+    });
+  }
+  requestAnimationFrame(animateHotspots);
+}
+animateHotspots();
+
+// ============================================================
+// ADAUGARE HOTSPOT
+// ============================================================
+let addingHotspot = false;
+let pendingHs = null;
+let editingHsIdx = null;
+
+function startAddHotspot() {
+  addingHotspot = true;
+  pendingHs = { type: 'circle', size: 60, opacity: 70, targetId: '' };
+  document.getElementById('btn-add-hs').classList.add('active');
+  document.getElementById('hs-edit-bar').classList.add('visible');
+  document.getElementById('hs-edit-crosshair').classList.add('visible');
+  document.getElementById('viewer').style.cursor = 'crosshair';
+
+  // Click pe viewer = plasare hotspot
+  document.getElementById('viewer').addEventListener('click', placeHotspot, { once: true });
+}
+
+function placeHotspot(e) {
+  if (!addingHotspot) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const xFrac = (e.clientX - rect.left) / rect.width;
+  const yFrac = (e.clientY - rect.top) / rect.height;
+
+  const hfov = viewer.getHfov();
+  const vfov = hfov * (rect.height / rect.width);
+
+  const yaw = viewer.getYaw() + (xFrac - 0.5) * hfov;
+  const pitch = viewer.getPitch() - (yFrac - 0.5) * vfov;
+
+  pendingHs.pitch = pitch;
+  pendingHs.yaw = yaw;
+  editingHsIdx = null;
+
+  stopAddMode();
+  openHsPanel(false);
+}
+
+function stopAddMode() {
+  addingHotspot = false;
+  document.getElementById('btn-add-hs').classList.remove('active');
+  document.getElementById('hs-edit-bar').classList.remove('visible');
+  document.getElementById('hs-edit-crosshair').classList.remove('visible');
+  document.getElementById('viewer').style.cursor = '';
+}
+
+function openEditHotspot(idx) {
+  const hs = hotspots[panoramaActiva][idx];
+  pendingHs = { ...hs };
+  editingHsIdx = idx;
+  openHsPanel(true);
+}
+
+function openHsPanel(isEdit) {
+  // Populare select target
+  const sel = document.getElementById('hs-target');
+  sel.innerHTML = panorame.filter(p => p.id !== panoramaActiva)
+    .map(p => `<option value="${p.id}" ${pendingHs.targetId===p.id?'selected':''}>${p.titlu}</option>`).join('');
+  if (!pendingHs.targetId) pendingHs.targetId = sel.value;
+
+  document.getElementById('hs-panel-title').textContent = isEdit ? 'Editează hotspot' : 'Hotspot nou';
+  document.getElementById('hs-del-btn').style.display = isEdit ? 'block' : 'none';
+  selectHsType(pendingHs.type || 'circle');
+  document.getElementById('hs-size').value = pendingHs.size || 60;
+  document.getElementById('hs-opacity').value = pendingHs.opacity || 70;
+  updateHsPreview();
+
+  document.getElementById('hs-panel').classList.add('open');
+  document.getElementById('hs-overlay').classList.add('open');
+}
+
+function selectHsType(type) {
+  pendingHs.type = type;
+  document.getElementById('hs-type-circle').classList.toggle('sel', type==='circle');
+  document.getElementById('hs-type-arrow').classList.toggle('sel', type==='arrow');
+}
+
+function updateHsPreview() {
+  const size = document.getElementById('hs-size').value;
+  const op = document.getElementById('hs-opacity').value;
+  document.getElementById('hs-size-val').textContent = size;
+  document.getElementById('hs-opacity-val').textContent = op + '%';
+  if (pendingHs) { pendingHs.size = parseInt(size); pendingHs.opacity = parseInt(op); }
+}
+
+function confirmHotspot() {
+  pendingHs.targetId = document.getElementById('hs-target').value;
+  pendingHs.id = 'hs_' + Date.now();
+
+  if (editingHsIdx !== null) {
+    hotspots[panoramaActiva][editingHsIdx] = { ...pendingHs };
+  } else {
+    hotspots[panoramaActiva].push({ ...pendingHs });
+  }
+
+  closeHsPanel();
+  renderHotspots();
+  saveAll();
+}
+
+function deleteHotspot() {
+  if (editingHsIdx !== null) {
+    hotspots[panoramaActiva].splice(editingHsIdx, 1);
+    closeHsPanel();
+    renderHotspots();
+    saveAll();
+  }
+}
+
+function cancelHsEdit() { closeHsPanel(); stopAddMode(); }
+function closeHsPanel() {
+  document.getElementById('hs-panel').classList.remove('open');
+  document.getElementById('hs-overlay').classList.remove('open');
+  editingHsIdx = null; pendingHs = null;
+}
+
+// ============================================================
+// INITIAL VIEW
+// ============================================================
+let ivMode = false;
+
+function toggleIVMode() {
+  ivMode = !ivMode;
+  document.getElementById('btn-iv').classList.toggle('active', ivMode);
+  document.getElementById('iv-bar').classList.toggle('visible', ivMode);
+  if (!ivMode) {
+    // Salveaza vederea curenta
+    initialView[panoramaActiva] = {
+      pitch: viewer.getPitch(),
+      yaw: viewer.getYaw(),
+      hfov: viewer.getHfov()
+    };
+    saveAll();
+    showToast('✅ Vedere inițială salvată pentru ' + panorame.find(p=>p.id===panoramaActiva)?.titlu);
+  }
+}
+
+// ============================================================
+// PLAN
+// ============================================================
+let planOpen = false;
+
+function togglePlan() {
+  planOpen = !planOpen;
+  document.getElementById('plan-panel').classList.toggle('open', planOpen);
+  document.getElementById('plan-overlay').classList.toggle('open', planOpen);
+  if (planOpen) renderDots();
+}
+
 function renderDots() {
+  document.querySelectorAll('.plan-dot').forEach(d => d.remove());
   const container = document.getElementById('plan-container');
-  container.querySelectorAll('.plan-dot').forEach(d => d.remove());
   panorame.forEach(p => {
     const dot = document.createElement('div');
     dot.className = 'plan-dot' + (p.id === panoramaActiva ? ' active' : '');
@@ -322,105 +597,52 @@ function renderDots() {
     dot.style.top = p.planY + '%';
     dot.style.width = p.marime + 'px';
     dot.style.height = p.marime + 'px';
-    dot.onclick = (e) => { if (!editMode) { viewer.loadScene(p.id); togglePlan(); } e.stopPropagation(); };
+    dot.onclick = e => { viewer.loadScene(p.id); togglePlan(); e.stopPropagation(); };
     container.appendChild(dot);
-    if (editMode) enableDrag(dot, p);
+    enableDrag(dot, p);
   });
 }
 
 function updateDots() {
   panorame.forEach(p => {
-    const dot = document.getElementById('dot-' + p.id);
-    if (dot) dot.className = 'plan-dot' + (p.id === panoramaActiva ? ' active' : '');
+    const d = document.getElementById('dot-' + p.id);
+    if (d) d.className = 'plan-dot' + (p.id === panoramaActiva ? ' active' : '');
   });
-}
-
-let planOpen = false;
-function togglePlan() {
-  planOpen = !planOpen;
-  document.getElementById('plan-panel').classList.toggle('open', planOpen);
-  document.getElementById('plan-overlay').classList.toggle('open', planOpen);
-  if (planOpen) renderDots();
-}
-
-// ============================================================
-// MODUL EDITARE
-// ============================================================
-let editMode = false;
-
-function toggleEdit() {
-  editMode = !editMode;
-  const btn = document.getElementById('btn-edit');
-  btn.classList.toggle('editing', editMode);
-  btn.textContent = editMode ? '✅ Gata editare' : '✏️ Editează plan';
-  document.getElementById('edit-hint').classList.toggle('visible', editMode);
-  document.getElementById('btn-export').classList.toggle('visible', editMode);
-  if (!planOpen) togglePlan();
-  else renderDots();
 }
 
 function enableDrag(dot, panoData) {
-  let dragging = false, startX, startY, startLeft, startTop;
+  let dragging = false, startX, startY, startL, startT;
   const container = document.getElementById('plan-container');
 
-  dot.addEventListener('mousedown', e => {
-    dragging = true;
-    startX = e.clientX; startY = e.clientY;
-    startLeft = panoData.planX; startTop = panoData.planY;
-    e.preventDefault(); e.stopPropagation();
-  });
-
-  dot.addEventListener('touchstart', e => {
-    dragging = true;
-    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-    startLeft = panoData.planX; startTop = panoData.planY;
-    e.preventDefault();
-  }, { passive: false });
-
-  document.addEventListener('mousemove', e => {
+  const onStart = (cx, cy) => { dragging = true; startX=cx; startY=cy; startL=panoData.planX; startT=panoData.planY; };
+  const onMove = (cx, cy) => {
     if (!dragging) return;
     const rect = container.getBoundingClientRect();
-    const dx = ((e.clientX - startX) / rect.width) * 100;
-    const dy = ((e.clientY - startY) / rect.height) * 100;
-    panoData.planX = Math.max(0, Math.min(100, startLeft + dx));
-    panoData.planY = Math.max(0, Math.min(100, startTop + dy));
+    panoData.planX = Math.max(0, Math.min(100, startL + (cx-startX)/rect.width*100));
+    panoData.planY = Math.max(0, Math.min(100, startT + (cy-startY)/rect.height*100));
     dot.style.left = panoData.planX + '%';
     dot.style.top = panoData.planY + '%';
-  });
+  };
+  const onEnd = () => { dragging = false; };
 
-  document.addEventListener('mouseup', () => { dragging = false; });
+  dot.addEventListener('mousedown', e => { onStart(e.clientX, e.clientY); e.preventDefault(); e.stopPropagation(); });
+  document.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+  document.addEventListener('mouseup', onEnd);
 
-  document.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    const rect = container.getBoundingClientRect();
-    const dx = ((e.touches[0].clientX - startX) / rect.width) * 100;
-    const dy = ((e.touches[0].clientY - startY) / rect.height) * 100;
-    panoData.planX = Math.max(0, Math.min(100, startLeft + dx));
-    panoData.planY = Math.max(0, Math.min(100, startTop + dy));
-    dot.style.left = panoData.planX + '%';
-    dot.style.top = panoData.planY + '%';
-  }, { passive: false });
+  dot.addEventListener('touchstart', e => { onStart(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, {passive:false});
+  document.addEventListener('touchmove', e => { if(dragging) { onMove(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }}, {passive:false});
+  document.addEventListener('touchend', onEnd);
 
-  document.addEventListener('touchend', () => { dragging = false; });
-
-  // Scroll = schimba marimea
   dot.addEventListener('wheel', e => {
     e.preventDefault();
-    panoData.marime = Math.max(12, Math.min(40, panoData.marime - Math.sign(e.deltaY) * 2));
+    panoData.marime = Math.max(12, Math.min(50, panoData.marime - Math.sign(e.deltaY)*2));
     dot.style.width = panoData.marime + 'px';
     dot.style.height = panoData.marime + 'px';
-  }, { passive: false });
+  }, {passive:false});
 }
 
-function exportPositions() {
-  const lines = panorame.map(p =>
-    `  { id: "${p.id}", titlu: "${p.titlu}", fisier: "${p.fisier}", planX: ${p.planX.toFixed(1)}, planY: ${p.planY.toFixed(1)}, marime: ${p.marime} },`
-  ).join('\n');
-  const out = document.getElementById('export-output');
-  out.textContent = lines;
-  out.classList.add('visible');
-  navigator.clipboard.writeText(lines).catch(()=>{});
-}
+// Init
+renderHotspots();
 </script>
 </body>
 </html>
