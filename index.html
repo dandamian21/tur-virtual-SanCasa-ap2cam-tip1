@@ -170,7 +170,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v7</div>
+  <div id="version">v8</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -310,27 +310,40 @@ function buildScenes() {
 
 loadSaved();
 
-const viewer = pannellum.viewer('viewer', {
+let viewer = pannellum.viewer('viewer', {
   default: { firstScene:'hol01', autoLoad:true, showControls:false, mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false },
   scenes: buildScenes()
 });
 
-viewer.on('scenechange', function(id) {
+function attachViewerEvents() {
+  viewer.on('scenechange', function(id) {
+    activeScene = id;
+    document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
+    updateSidebar();
+    drawHS();
+  });
+}
+attachViewerEvents();
+
+// Navigare cu rebuild pentru a aplica vederea initiala corect
+function goToScene(id) {
+  const iv = initView[id] || {pitch:0, yaw:0, hfov:100};
+  // Distruge viewer-ul curent si reconstruieste cu unghiul corect
+  viewer.destroy();
+  document.getElementById('viewer').innerHTML = '';
+  viewer = pannellum.viewer('viewer', {
+    default: {
+      firstScene: id, autoLoad:true, showControls:false,
+      mouseZoom:false, keyboardZoom:false, showFullscreenCtrl:false
+    },
+    scenes: buildScenes()
+  });
+  attachViewerEvents();
   activeScene = id;
   document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
   updateSidebar();
-  drawHS();
-  // Aplica vederea initiala salvata
-  if(initView[id]) {
-    setTimeout(function() {
-      try {
-        viewer.setPitch(initView[id].pitch);
-        viewer.setYaw(initView[id].yaw);
-        viewer.setHfov(initView[id].hfov);
-      } catch(e) {}
-    }, 50);
-  }
-});
+  setTimeout(drawHS, 100);
+}
 
 // Opreste zoom
 document.getElementById('viewer-wrap').addEventListener('wheel', e=>e.stopPropagation(), true);
@@ -344,7 +357,7 @@ function buildSidebar() {
     div.className = 'scene-item' + (p.id===activeScene?' active':'');
     div.id = 'si-'+p.id;
     div.innerHTML = `<div class="dot"></div><span>${p.titlu}</span>`;
-    div.onclick = () => viewer.loadScene(p.id);
+    div.onclick = () => goToScene(p.id);
     list.appendChild(div);
   });
 }
@@ -393,7 +406,7 @@ function drawHS() {
     const el = document.createElement('div');
     el.className = 'hs-el';
     el.innerHTML = makeSVG(h.type, h.size, h.opacity);
-    el.onclick = e => { e.stopPropagation(); if(!addingHS) viewer.loadScene(h.target); };
+    el.onclick = e => { e.stopPropagation(); if(!addingHS) goToScene(h.target); };
     el.ondblclick = e => { e.stopPropagation(); openEditHS(i); };
     el.title = panorame.find(p=>p.id===h.target)?.titlu||'';
     wrap.appendChild(el);
@@ -545,7 +558,7 @@ document.addEventListener('mouseup', e=>{
   const wasMoved = planDrag.moved;
   planDrag.active=false; planDrag.moved=false;
   if(!wasMoved && planDrag.pano) {
-    viewer.loadScene(planDrag.pano.id);
+    goToScene(planDrag.pano.id);
     closePlan();
   }
   planDrag.dot=null; planDrag.pano=null;
