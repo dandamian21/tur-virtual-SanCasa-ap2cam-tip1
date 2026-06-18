@@ -175,6 +175,7 @@
   <div id="sidebar-tools">
     <button class="tool-btn" id="btn-plan" onclick="openPlan()">🗺️ Plan apartament</button>
     <button class="tool-btn" id="btn-add-hs" onclick="startAddHS()">➕ Adaugă hotspot</button>
+    <button class="tool-btn" id="btn-edit-hs" onclick="toggleHSEditMode()">✏️ Editează hotspot-uri</button>
     <button class="tool-btn" id="btn-iv" onclick="startIV()">👁️ Setează vedere inițială</button>
     <button class="tool-btn green" onclick="saveAll()">💾 Salvează tot</button>
   </div>
@@ -183,7 +184,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v13</div>
+  <div id="version">v14</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -380,9 +381,18 @@ function updateSidebar() {
 buildSidebar();
 
 // ============ HOTSPOT-URI - sistem nativ Pannellum ============
+let hsEditMode = false;
+
+function toggleHSEditMode() {
+  hsEditMode = !hsEditMode;
+  document.getElementById('btn-edit-hs').classList.toggle('active', hsEditMode);
+  document.getElementById('btn-edit-hs').textContent = hsEditMode ? '✏️ Mod editare ON' : '✏️ Editează hotspot-uri';
+  // Rebuild ca sa schimbe comportamentul click
+  rebuildViewer(activeScene);
+  toast(hsEditMode ? '✏️ Click pe hotspot pentru a-l edita' : '✅ Mod editare dezactivat');
+}
 
 function createHSTooltip(div, args) {
-  div.style.cursor = 'pointer';
   div.style.opacity = (args.opacity||70)/100;
   if(args.type==='circle') {
     const s=args.size||60;
@@ -396,11 +406,20 @@ function createHSTooltip(div, args) {
       <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>`;
   }
-  div.ondblclick = function(e) { e.stopPropagation(); openEditHS(args.idx); };
+  // In modul editare, arata un indicator vizual
+  if(hsEditMode) {
+    div.style.outline = '2px dashed #f0a500';
+    div.style.outlineOffset = '3px';
+  }
 }
 
 function hsClick(e, args) {
-  if(!addingHS) goToScene(args.target);
+  if(addingHS) return;
+  if(hsEditMode) {
+    openEditHS(args.idx);
+  } else {
+    goToScene(args.target);
+  }
 }
 
 function buildScenes() {
