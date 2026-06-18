@@ -5,6 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Tur Virtual - Apartament 2 camere</title>
   <script src="aframe.min.js"></script>
+  <script>
+  AFRAME.registerComponent('arrow-look-controls', {
+    init: function() {
+      this.keys = {};
+      this.onKeyDown = (e) => { this.keys[e.code] = true; };
+      this.onKeyUp = (e) => { this.keys[e.code] = false; };
+      window.addEventListener('keydown', this.onKeyDown);
+      window.addEventListener('keyup', this.onKeyUp);
+    },
+    tick: function() {
+      const speed = 0.8;
+      const rot = this.el.getAttribute('rotation');
+      let {x, y, z} = rot;
+      if(this.keys['ArrowLeft'])  y += speed;
+      if(this.keys['ArrowRight']) y -= speed;
+      if(this.keys['ArrowUp'])    x = Math.min(85,  x + speed);
+      if(this.keys['ArrowDown'])  x = Math.max(-85, x - speed);
+      if(this.keys['ArrowLeft']||this.keys['ArrowRight']||this.keys['ArrowUp']||this.keys['ArrowDown']) {
+        this.el.setAttribute('rotation', {x, y, z});
+      }
+    },
+    remove: function() {
+      window.removeEventListener('keydown', this.onKeyDown);
+      window.removeEventListener('keyup', this.onKeyUp);
+    }
+  });
+  </script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#000; font-family:'Segoe UI',sans-serif; overflow:hidden; width:100vw; height:100vh; }
@@ -119,32 +146,7 @@
 </a-scene>
 
 <script>
-AFRAME.registerComponent('arrow-look-controls', {
-  init: function() {
-    this.keys = {};
-    this.onKeyDown = (e) => { this.keys[e.code] = true; };
-    this.onKeyUp = (e) => { this.keys[e.code] = false; };
-    window.addEventListener('keydown', this.onKeyDown);
-    window.addEventListener('keyup', this.onKeyUp);
-  },
-  tick: function() {
-    const speed = 0.8;
-    const cam = this.el;
-    const rot = cam.getAttribute('rotation');
-    let {x, y, z} = rot;
-    if(this.keys['ArrowLeft'])  y += speed;
-    if(this.keys['ArrowRight']) y -= speed;
-    if(this.keys['ArrowUp'])    x = Math.min(85,  x + speed);
-    if(this.keys['ArrowDown'])  x = Math.max(-85, x - speed);
-    if(this.keys['ArrowLeft']||this.keys['ArrowRight']||this.keys['ArrowUp']||this.keys['ArrowDown']) {
-      cam.setAttribute('rotation', {x, y, z});
-    }
-  },
-  remove: function() {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-  }
-});
+const panorame = [
   {id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  px:47.5,py:62.0,pm:22},
   {id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  px:44.0,py:72.0,pm:22},
   {id:"hol03",  titlu:"Hol-03",       fisier:"03_ap.2cam-Hol-03-Exp-0.5.jpg",  px:50.0,py:72.0,pm:22},
