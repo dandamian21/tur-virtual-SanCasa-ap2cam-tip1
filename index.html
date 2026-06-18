@@ -80,6 +80,14 @@
     }
     #crosshair.visible { display:block; }
 
+    /* Pannellum hotspot nativ - container */
+    .pnlm-hs-custom {
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+    .pnlm-hs-custom:hover svg { filter: brightness(1.4); }
+    .pnlm-hotspot-base { display: none !important; }
+
     /* Hotspot-uri custom SVG */
     .hs-el {
       position:absolute; cursor:pointer; transform:translate(-50%,-50%);
@@ -170,7 +178,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v8</div>
+  <div id="version">v9</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -328,7 +336,6 @@ attachViewerEvents();
 // Navigare cu rebuild pentru a aplica vederea initiala corect
 function goToScene(id) {
   const iv = initView[id] || {pitch:0, yaw:0, hfov:100};
-  // Distruge viewer-ul curent si reconstruieste cu unghiul corect
   viewer.destroy();
   document.getElementById('viewer').innerHTML = '';
   viewer = pannellum.viewer('viewer', {
@@ -342,7 +349,7 @@ function goToScene(id) {
   activeScene = id;
   document.getElementById('pano-title').textContent = panorame.find(p=>p.id===id)?.titlu||'';
   updateSidebar();
-  setTimeout(drawHS, 100);
+  setTimeout(drawHS, 150);
 }
 
 // Opreste zoom
@@ -399,34 +406,60 @@ function pxFromPitchYaw(pitch, yaw) {
 }
 
 function drawHS() {
+  // Sterge hotspot-urile custom existente din Pannellum
   document.querySelectorAll('.hs-el').forEach(e=>e.remove());
-  const wrap = document.getElementById('viewer-wrap');
+
   const hs = hotspots[activeScene]||[];
   hs.forEach((h,i) => {
+    // Cream un element custom pentru fiecare hotspot
     const el = document.createElement('div');
-    el.className = 'hs-el';
-    el.innerHTML = makeSVG(h.type, h.size, h.opacity);
+    el.className = 'hs-el hs-type-'+h.type;
+    el.dataset.idx = i;
+    el.style.opacity = (h.opacity||70)/100;
+
+    if(h.type==='circle') {
+      const s = h.size||60;
+      // Cerc in perspectiva - aplatizat vertical ca sa para pe podea
+      el.innerHTML = `<svg width="${s}" height="${Math.round(s*0.45)}" viewBox="0 0 100 45" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="22" rx="46" ry="20" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="3"/>
+        <ellipse cx="50" cy="22" rx="16" ry="7" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="2"/>
+      </svg>`;
+    } else {
+      const s = h.size||60;
+      el.innerHTML = `<svg width="${Math.round(s*0.65)}" height="${s}" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
     el.onclick = e => { e.stopPropagation(); if(!addingHS) goToScene(h.target); };
     el.ondblclick = e => { e.stopPropagation(); openEditHS(i); };
     el.title = panorame.find(p=>p.id===h.target)?.titlu||'';
-    wrap.appendChild(el);
+
+    // Inject in Pannellum folosind hotspot nativ (ancora pitch/yaw perfecta)
+    viewer.addHotSpot({
+      id: 'hs_'+activeScene+'_'+i,
+      pitch: h.pitch,
+      yaw: h.yaw,
+      type: 'custom',
+      cssClass: 'pnlm-hs-custom',
+      createTooltipFunc: (container) => {
+        container.appendChild(el);
+      }
+    }, activeScene);
   });
-  updateHSPositions();
 }
 
-function updateHSPositions() {
-  const els = document.querySelectorAll('.hs-el');
+// Curata hotspot-urile native Pannellum inainte de redraw
+function clearHS() {
   const hs = hotspots[activeScene]||[];
-  els.forEach((el,i) => {
-    if(!hs[i]) return;
-    const {x,y,visible} = pxFromPitchYaw(hs[i].pitch, hs[i].yaw);
-    el.style.left = x+'px';
-    el.style.top = y+'px';
-    el.style.display = visible?'block':'none';
+  hs.forEach((_,i) => {
+    try { viewer.removeHotSpot('hs_'+activeScene+'_'+i, activeScene); } catch(e){}
   });
+  document.querySelectorAll('.hs-el').forEach(e=>e.remove());
 }
 
-function animate() { updateHSPositions(); requestAnimationFrame(animate); }
+// Nu mai avem nevoie de animate loop pentru pozitionare
+function animate() { requestAnimationFrame(animate); }
 animate();
 
 // ============ ADAUGARE HOTSPOT ============
