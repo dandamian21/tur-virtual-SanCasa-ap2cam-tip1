@@ -50,29 +50,65 @@
     }
     #btn-plan:hover { background: rgba(255,255,255,0.28); }
 
-    /* Panel plan */
+    /* Panel plan - overlay mare */
     #plan-panel {
-      position: absolute;
-      bottom: 70px;
-      right: 24px;
-      width: 340px;
-      background: rgba(20,20,20,0.92);
-      border-radius: 14px;
-      padding: 14px;
-      z-index: 300;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90vw, 900px);
+      max-height: 90vh;
+      background: rgba(15,15,15,0.97);
+      border-radius: 18px;
+      padding: 20px;
+      z-index: 500;
       display: none;
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
     }
     #plan-panel.open { display: block; }
 
-    #plan-panel h3 {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #aaa;
-      margin-bottom: 10px;
+    /* Overlay inchidere click afara */
+    #plan-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 499;
     }
+    #plan-overlay.open { display: block; }
+
+    #plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    #plan-panel h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #aaa;
+      margin: 0;
+    }
+
+    #btn-close-plan {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    #btn-close-plan:hover { background: rgba(255,255,255,0.25); }
 
     #plan-container {
       position: relative;
@@ -179,8 +215,12 @@
 <button id="btn-edit" onclick="toggleEdit()">✏️ Editează plan</button>
 <button id="btn-plan" onclick="togglePlan()">🗺️ Plan</button>
 
+<div id="plan-overlay" onclick="togglePlan()"></div>
 <div id="plan-panel">
-  <h3>Plan apartament</h3>
+  <div id="plan-header">
+    <h3>Plan apartament</h3>
+    <button id="btn-close-plan" onclick="togglePlan()">✕</button>
+  </div>
   <div id="plan-container">
     <img id="plan-img" src="00_ap.2cam-TOP-01.jpg" alt="Plan apartament">
     <!-- Punctele de pe plan sunt generate dinamic de JS -->
@@ -299,6 +339,7 @@ let planOpen = false;
 function togglePlan() {
   planOpen = !planOpen;
   document.getElementById('plan-panel').classList.toggle('open', planOpen);
+  document.getElementById('plan-overlay').classList.toggle('open', planOpen);
   if (planOpen) renderDots();
 }
 
