@@ -205,12 +205,13 @@
   id="scene"
   vr-mode-ui="enabled:false"
   loading-screen="enabled:false"
-  renderer="antialias:true;colorManagement:true;physicallyCorrectLights:false"
+  renderer="antialias:true;colorManagement:false;physicallyCorrectLights:false;maxCanvasWidth:4096;maxCanvasHeight:2048;highRefreshRate:true"
   device-orientation-permission-ui="enabled:false">
 
   <a-assets timeout="60000"></a-assets>
 
-  <a-sky id="sky" radius="100" segments-height="64" segments-width="64" rotation="0 -90 0"></a-sky>
+  <a-sky id="sky" radius="100" segments-height="128" segments-width="128" rotation="0 -90 0"
+    material="shader:flat;npot:true;anisotropy:16"></a-sky>
 
   <a-entity id="hotspots"></a-entity>
 
