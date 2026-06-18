@@ -80,18 +80,18 @@
     }
     #crosshair.visible { display:block; }
 
-    /* Pannellum hotspot nativ - container */
-    .pnlm-hs-custom {
-      cursor: pointer;
-      transform: translate(-50%, -50%);
+    /* FIX CRITIC: pannellum ascunde toate hotspot-urile implicit cu visibility:hidden */
+    /* Trebuie sa suprascriem pentru clasa noastra custom */
+    .pnlm-hotspot-base.pnlm-hs-custom {
+      visibility: visible !important;
+      cursor: pointer !important;
       background: none !important;
       border: none !important;
       width: auto !important;
       height: auto !important;
+      transform: translate(-50%, -50%);
     }
-    .pnlm-hs-custom:hover svg { filter: brightness(1.4); }
-    /* Ascunde doar tooltip-ul default, nu containerul */
-    .pnlm-hs-custom > .pnlm-tooltip { display: none !important; }
+    .pnlm-hotspot-base.pnlm-hs-custom:hover svg { filter: brightness(1.4); }
 
     /* Hotspot-uri custom SVG */
     .hs-el {
@@ -183,7 +183,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v12</div>
+  <div id="version">v13</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
