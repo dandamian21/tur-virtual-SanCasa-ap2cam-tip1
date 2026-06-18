@@ -205,7 +205,7 @@
   id="scene"
   vr-mode-ui="enabled:false"
   loading-screen="enabled:false"
-  renderer="antialias:true;colorManagement:false;physicallyCorrectLights:false;maxCanvasWidth:4096;maxCanvasHeight:2048;highRefreshRate:true"
+  renderer="antialias:true;colorManagement:false;physicallyCorrectLights:false;highRefreshRate:true"
   device-orientation-permission-ui="enabled:false">
 
   <a-assets timeout="60000"></a-assets>
@@ -272,10 +272,29 @@ function pitchYawToPos(pitch, yaw, r) {
 function goToScene(id) {
   const pano=panorame.find(p=>p.id===id);
   if(!pano) return;
-  const sky=document.getElementById('sky');
-  sky.setAttribute('src', pano.fisier);
+
+  // Incarca imaginea la rezolutie maxima si o aplica manual pe textura Three.js
+  const img = new Image();
+  img.onload = function() {
+    const sky = document.getElementById('sky');
+    const mesh = sky.getObject3D('mesh');
+    if(mesh && mesh.material) {
+      const texture = new THREE.Texture(img);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = 16;
+      texture.needsUpdate = true;
+      mesh.material.map = texture;
+      mesh.material.needsUpdate = true;
+    } else {
+      // Fallback daca mesh nu e gata
+      sky.setAttribute('src', pano.fisier);
+    }
+  };
+  img.onerror = () => { document.getElementById('sky').setAttribute('src', pano.fisier); };
+  img.src = pano.fisier;
+
   const iv=IV[id]||{pitch:0,yaw:0};
-  // Seteaza vederea initiala prin componenta custom-look
   const cam = document.getElementById('cam');
   const cl = cam.components['custom-look'];
   if(cl) cl.setRotation(iv.pitch, iv.yaw);
@@ -456,6 +475,15 @@ async function loadConfig() {
 buildSidebar();
 
 document.getElementById('scene').addEventListener('loaded', async ()=>{
+  // Elimina limita de rezolutie textura din Three.js
+  const renderer = document.getElementById('scene').renderer;
+  if(renderer) {
+    // Three.js limiteaza texturile la maxTextureSize al GPU
+    // Forteaza sa accepte 8192px
+    const origTexImage = renderer.getContext().texImage2D.bind(renderer.getContext());
+    renderer.capabilities.maxTextureSize = 8192;
+  }
+
   await loadConfig();
   goToScene('hol01');
   checkVRDevice();
