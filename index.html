@@ -178,7 +178,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v9</div>
+  <div id="version">v10</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -377,88 +377,49 @@ function updateSidebar() {
 
 buildSidebar();
 
-// ============ HOTSPOT-URI DESENATE ============
-function makeSVG(type, size, opacity) {
-  if(type==='circle') {
-    const s=size||60;
-    return `<svg width="${s}" height="${s}" viewBox="0 0 60 60" style="opacity:${(opacity||70)/100}">
-      <circle cx="30" cy="30" r="26" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="2.5"/>
-      <circle cx="30" cy="30" r="10" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="1.5"/>
+// ============ HOTSPOT-URI - sistem nativ Pannellum ============
+
+function createHSTooltip(div, args) {
+  div.style.cursor = 'pointer';
+  div.style.opacity = (args.opacity||70)/100;
+  if(args.type==='circle') {
+    const s=args.size||60;
+    div.innerHTML = `<svg width="${s}" height="${Math.round(s*0.45)}" viewBox="0 0 100 45" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="22" rx="46" ry="20" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="3"/>
+      <ellipse cx="50" cy="22" rx="16" ry="7" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="2"/>
     </svg>`;
   } else {
-    const s=size||60; const w=Math.round(s*0.65);
-    return `<svg width="${w}" height="${s}" viewBox="0 0 40 60" style="opacity:${(opacity||70)/100}">
-      <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+    const s=args.size||60; const w=Math.round(s*0.65);
+    div.innerHTML = `<svg width="${w}" height="${s}" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>`;
   }
+  div.ondblclick = function(e) { e.stopPropagation(); openEditHS(args.idx); };
 }
 
-function pxFromPitchYaw(pitch, yaw) {
-  const wrap = document.getElementById('viewer-wrap');
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-  const cYaw = viewer.getYaw(), cPitch = viewer.getPitch(), hfov = viewer.getHfov();
-  const vfov = hfov*(H/W);
-  let dYaw = yaw - cYaw;
-  while(dYaw>180) dYaw-=360; while(dYaw<-180) dYaw+=360;
-  const x = W*(0.5 + dYaw/hfov);
-  const y = H*(0.5 - (pitch-cPitch)/vfov);
-  return {x, y, visible: x>-60&&x<W+60&&y>-60&&y<H+60};
+function hsClick(e, args) {
+  if(!addingHS) goToScene(args.target);
 }
 
-function drawHS() {
-  // Sterge hotspot-urile custom existente din Pannellum
-  document.querySelectorAll('.hs-el').forEach(e=>e.remove());
-
-  const hs = hotspots[activeScene]||[];
-  hs.forEach((h,i) => {
-    // Cream un element custom pentru fiecare hotspot
-    const el = document.createElement('div');
-    el.className = 'hs-el hs-type-'+h.type;
-    el.dataset.idx = i;
-    el.style.opacity = (h.opacity||70)/100;
-
-    if(h.type==='circle') {
-      const s = h.size||60;
-      // Cerc in perspectiva - aplatizat vertical ca sa para pe podea
-      el.innerHTML = `<svg width="${s}" height="${Math.round(s*0.45)}" viewBox="0 0 100 45" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="50" cy="22" rx="46" ry="20" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="3"/>
-        <ellipse cx="50" cy="22" rx="16" ry="7" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="2"/>
-      </svg>`;
-    } else {
-      const s = h.size||60;
-      el.innerHTML = `<svg width="${Math.round(s*0.65)}" height="${s}" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="20,3 38,28 27,28 27,57 13,57 13,28 2,28" fill="rgba(255,255,255,0.25)" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
-      </svg>`;
-    }
-
-    el.onclick = e => { e.stopPropagation(); if(!addingHS) goToScene(h.target); };
-    el.ondblclick = e => { e.stopPropagation(); openEditHS(i); };
-    el.title = panorame.find(p=>p.id===h.target)?.titlu||'';
-
-    // Inject in Pannellum folosind hotspot nativ (ancora pitch/yaw perfecta)
-    viewer.addHotSpot({
-      id: 'hs_'+activeScene+'_'+i,
+function buildScenes() {
+  const s = {};
+  panorame.forEach(p => {
+    const iv = initView[p.id] || {pitch:0,yaw:0,hfov:100};
+    const hs = (hotspots[p.id]||[]).map((h,i) => ({
       pitch: h.pitch,
       yaw: h.yaw,
-      type: 'custom',
       cssClass: 'pnlm-hs-custom',
-      createTooltipFunc: (container) => {
-        container.appendChild(el);
-      }
-    }, activeScene);
+      createTooltipFunc: createHSTooltip,
+      createTooltipArgs: {type:h.type, size:h.size, opacity:h.opacity, target:h.target, idx:i},
+      clickHandlerFunc: hsClick,
+      clickHandlerArgs: {target:h.target}
+    }));
+    s[p.id] = { title:p.titlu, panorama:p.fisier, pitch:iv.pitch, yaw:iv.yaw, hfov:iv.hfov, hotSpots:hs };
   });
+  return s;
 }
 
-// Curata hotspot-urile native Pannellum inainte de redraw
-function clearHS() {
-  const hs = hotspots[activeScene]||[];
-  hs.forEach((_,i) => {
-    try { viewer.removeHotSpot('hs_'+activeScene+'_'+i, activeScene); } catch(e){}
-  });
-  document.querySelectorAll('.hs-el').forEach(e=>e.remove());
-}
-
-// Nu mai avem nevoie de animate loop pentru pozitionare
+function drawHS() {} // hotspot-urile sunt acum in buildScenes, nu mai e nevoie de drawHS
 function animate() { requestAnimationFrame(animate); }
 animate();
 
