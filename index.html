@@ -9,7 +9,6 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#000; font-family:'Segoe UI',sans-serif; overflow:hidden; width:100vw; height:100vh; }
 
-    /* SIDEBAR desktop */
     #sidebar {
       position:fixed; left:0; top:0; height:100vh; width:200px;
       background:rgba(10,10,10,0.85); backdrop-filter:blur(10px);
@@ -19,104 +18,61 @@
     }
     #sidebar.hidden { transform:translateX(-200px); }
     #sidebar-toggle {
-      position:fixed; left:0; top:50%; transform:translateY(-50%);
+      position:fixed; left:200px; top:50%; transform:translateY(-50%);
       width:22px; height:60px; background:rgba(20,20,20,0.85);
       border:1px solid rgba(255,255,255,0.15); border-left:none;
       border-radius:0 8px 8px 0; cursor:pointer; z-index:101;
       display:flex; align-items:center; justify-content:center;
-      color:rgba(255,255,255,0.6); font-size:11px; writing-mode:vertical-rl;
+      color:rgba(255,255,255,0.6); font-size:11px;
       transition:left 0.3s; backdrop-filter:blur(8px);
     }
-    #sidebar:not(.hidden) ~ #sidebar-toggle { left:200px; }
+    #sidebar.hidden ~ #sidebar-toggle { left:0; }
 
     #sb-header { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.08); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.4); flex-shrink:0; }
     #scene-list { flex:1; overflow-y:auto; padding:4px 0; }
-    #scene-list::-webkit-scrollbar { width:3px; }
-    #scene-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
-    .si {
-      padding:8px 14px; cursor:pointer; font-size:12px; color:rgba(255,255,255,0.55);
-      border-left:2px solid transparent; transition:all 0.15s; display:flex; align-items:center; gap:7px;
-    }
+    .si { padding:8px 14px; cursor:pointer; font-size:12px; color:rgba(255,255,255,0.55); border-left:2px solid transparent; transition:all 0.15s; display:flex; align-items:center; gap:7px; }
     .si:hover { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85); }
     .si.active { color:#f0a500; border-left-color:#f0a500; background:rgba(240,165,0,0.08); font-weight:600; }
     .si .dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.2); flex-shrink:0; }
     .si.active .dot { background:#f0a500; }
 
-    #btn-plan {
-      margin:10px; padding:8px 12px; background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.6);
-      border-radius:8px; cursor:pointer; font-size:11px; font-weight:600;
-      text-align:center; transition:all 0.15s; flex-shrink:0;
-    }
+    #btn-plan { margin:10px; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.6); border-radius:8px; cursor:pointer; font-size:11px; font-weight:600; text-align:center; transition:all 0.15s; flex-shrink:0; }
     #btn-plan:hover { background:rgba(255,255,255,0.12); color:#fff; }
 
-    /* Titlu panorama */
-    #pano-title {
-      position:fixed; top:16px; left:50%; transform:translateX(-50%);
-      background:rgba(0,0,0,0.55); color:#fff; padding:6px 20px;
-      border-radius:20px; font-size:14px; font-weight:600;
-      pointer-events:none; z-index:100; backdrop-filter:blur(6px);
-      white-space:nowrap;
-    }
+    #pano-title { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.55); color:#fff; padding:6px 20px; border-radius:20px; font-size:14px; font-weight:600; pointer-events:none; z-index:100; backdrop-filter:blur(6px); white-space:nowrap; }
 
-    /* Buton VR */
-    #btn-vr {
-      position:fixed; bottom:24px; right:24px;
-      background:rgba(240,165,0,0.9); color:#111;
-      padding:12px 24px; border-radius:12px; font-size:14px; font-weight:700;
-      cursor:pointer; z-index:100; border:none;
-      box-shadow:0 4px 20px rgba(240,165,0,0.4);
-      transition:all 0.2s; display:flex; align-items:center; gap:8px;
-    }
+    #btn-vr { position:fixed; bottom:24px; right:24px; background:rgba(240,165,0,0.9); color:#111; padding:12px 24px; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; z-index:100; border:none; box-shadow:0 4px 20px rgba(240,165,0,0.4); transition:all 0.2s; display:none; align-items:center; gap:8px; }
     #btn-vr:hover { background:#f0a500; transform:scale(1.05); }
-    #btn-vr.hidden { display:none; }
+    #btn-vr.show { display:flex; }
 
-    /* Plan modal */
     #plan-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; }
     #plan-bg.open { display:flex; }
     #plan-modal { background:#1a1a1a; border-radius:16px; padding:16px; width:min(94vw,880px); max-height:92vh; border:1px solid #333; display:flex; flex-direction:column; gap:10px; }
     #plan-hdr { display:flex; justify-content:space-between; align-items:center; }
     #plan-hdr h3 { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:#666; }
     #plan-close { width:28px; height:28px; border-radius:50%; background:#2a2a2a; border:1px solid #444; color:#aaa; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; }
-    #plan-wrap { position:relative; flex:1; overflow:hidden; }
+    #plan-wrap { position:relative; }
     #plan-wrap img { width:100%; height:auto; display:block; border-radius:8px; pointer-events:none; }
-    .pdot {
-      position:absolute; border-radius:50%;
-      border:2px solid rgba(255,255,255,0.7); background:rgba(255,255,255,0.12);
-      cursor:pointer; transform:translate(-50%,-50%);
-      transition:all 0.15s;
-    }
+    .pdot { position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,0.7); background:rgba(255,255,255,0.12); cursor:pointer; transform:translate(-50%,-50%); transition:all 0.15s; }
     .pdot:hover { border-color:#f0a500; background:rgba(240,165,0,0.2); transform:translate(-50%,-50%) scale(1.2); }
     .pdot.active { border-color:#f0a500; background:rgba(240,165,0,0.35); box-shadow:0 0 0 4px rgba(240,165,0,0.2); }
-    .pdot-label {
-      position:absolute; top:calc(100% + 4px); left:50%; transform:translateX(-50%);
-      background:rgba(0,0,0,0.75); color:#fff; font-size:9px; padding:2px 6px;
-      border-radius:4px; white-space:nowrap; pointer-events:none; display:none;
-    }
-    .pdot:hover .pdot-label { display:block; }
 
-    /* A-Frame canvas fullscreen */
-    a-scene { position:fixed; inset:0; width:100vw !important; height:100vh !important; }
-
-    /* Ascunde UI A-Frame default */
     .a-enter-vr { display:none !important; }
     .a-loader-title { display:none !important; }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
   <div id="sb-header">Panorame</div>
   <div id="scene-list"></div>
   <button id="btn-plan" onclick="openPlan()">🗺️ Plan apartament</button>
 </div>
-<div id="sidebar-toggle" onclick="toggleSidebar()">▶</div>
+<div id="sidebar-toggle" onclick="toggleSidebar()">◀</div>
 
 <div id="pano-title">Se încarcă...</div>
 <button id="btn-vr" onclick="enterVR()">🥽 Intră în VR</button>
 
-<!-- PLAN -->
 <div id="plan-bg">
   <div id="plan-modal">
     <div id="plan-hdr">
@@ -129,34 +85,28 @@
   </div>
 </div>
 
-<!-- A-FRAME SCENE -->
 <a-scene
   id="scene"
   vr-mode-ui="enabled:false"
-  loading-screen="dotsColor:#f0a500;backgroundColor:#000"
-  renderer="antialias:true;colorManagement:true"
+  loading-screen="enabled:false"
+  renderer="antialias:true;colorManagement:true;physicallyCorrectLights:false"
   device-orientation-permission-ui="enabled:false">
 
-  <a-assets id="assets" timeout="60000"></a-assets>
+  <a-assets timeout="60000"></a-assets>
 
-  <!-- Sky panorama -->
   <a-sky id="sky" radius="100" segments-height="64" segments-width="64" rotation="0 -90 0"></a-sky>
 
-  <!-- Hotspot-uri container -->
   <a-entity id="hotspots"></a-entity>
 
-  <!-- Camera -->
-  <a-entity id="rig" position="0 0 0">
+  <a-entity id="rig" position="0 1.6 0">
     <a-camera
       id="cam"
       look-controls="reverseMouseDrag:false;touchEnabled:true;magicWindowTrackingEnabled:true"
       wasd-controls="enabled:false"
       fov="90">
-      <!-- Cursor pentru click controller Quest -->
       <a-cursor
-        id="cursor"
         fuse="false"
-        raycaster="objects:.hotspot-mesh"
+        raycaster="objects:.hotspot-mesh;far:200"
         color="white"
         opacity="0.8"
         scale="0.5 0.5 0.5">
@@ -167,7 +117,6 @@
 </a-scene>
 
 <script>
-// ===== DATE =====
 const panorame = [
   {id:"hol01",  titlu:"Hol-01",       fisier:"01_ap.2cam-Hol-01-Exp-0.5.jpg",  px:47.5,py:62.0,pm:22},
   {id:"hol02",  titlu:"Hol-02",       fisier:"02_ap.2cam-Hol-02-Exp-0.5.jpg",  px:44.0,py:72.0,pm:22},
@@ -187,290 +136,188 @@ const panorame = [
   {id:"baie03", titlu:"Baie-03",      fisier:"16_ap.2cam-Baie-03_Exp 1.jpg",   px:24.0,py:68.0,pm:22},
 ];
 
-// ===== STATE =====
-let HS = {};      // hotspots: { sceneId: [{pitch,yaw,type,target,size,opacity},...] }
-let IV = {};      // initial view: { sceneId: {pitch,yaw} }
-let activeScene = 'hol01';
-let sidebarOpen = true;
-let isVR = false;
-
+let HS = {}, IV = {}, activeScene = 'hol01', sidebarOpen = true;
 panorame.forEach(p => { HS[p.id] = []; });
 
-// ===== LOAD DATE =====
 function loadData() {
   try {
-    const h = localStorage.getItem('tv2_hs'); if(h) HS = JSON.parse(h);
-    const v = localStorage.getItem('tv2_iv'); if(v) IV = JSON.parse(v);
-    const p = localStorage.getItem('tv2_pl');
-    if(p) JSON.parse(p).forEach(s => {
-      const f = panorame.find(x => x.id===s.id);
-      if(f) { f.px=s.px; f.py=s.py; f.pm=s.pm; }
-    });
-    panorame.forEach(p => { if(!HS[p.id]) HS[p.id]=[]; });
-  } catch(e) {}
+    const h=localStorage.getItem('tv2_hs'); if(h) HS=JSON.parse(h);
+    const v=localStorage.getItem('tv2_iv'); if(v) IV=JSON.parse(v);
+    const p=localStorage.getItem('tv2_pl');
+    if(p) JSON.parse(p).forEach(s=>{const f=panorame.find(x=>x.id===s.id);if(f){f.px=s.px;f.py=s.py;f.pm=s.pm;}});
+    panorame.forEach(p=>{if(!HS[p.id])HS[p.id]=[];});
+  } catch(e){}
 }
 
-// ===== A-FRAME SETUP =====
-function degToRad(d) { return d * Math.PI / 180; }
+function degToRad(d) { return d*Math.PI/180; }
 
-// Converti pitch/yaw Pannellum -> pozitie 3D pe sfera A-Frame
-// Pannellum: pitch=sus/jos, yaw=stanga/dreapta
-// A-Frame: x=dreapta, y=sus, z=inainte (spre noi)
-function pitchYawToVec(pitch, yaw, r) {
-  const p = degToRad(pitch);
-  const y = degToRad(-yaw); // A-Frame are yaw inversat
+function pitchYawToPos(pitch, yaw, r) {
+  const p=degToRad(pitch), y=degToRad(-yaw+180);
   return {
-    x: r * Math.cos(p) * Math.sin(y),
-    y: r * Math.sin(p),
-    z: r * Math.cos(p) * Math.cos(y)
+    x: r*Math.cos(p)*Math.sin(y),
+    y: r*Math.sin(p),
+    z: r*Math.cos(p)*Math.cos(y)
   };
 }
 
-// ===== NAVIGARE =====
 function goToScene(id) {
-  const pano = panorame.find(p => p.id===id);
+  const pano=panorame.find(p=>p.id===id);
   if(!pano) return;
-
-  const sky = document.getElementById('sky');
-  // Sterge src vechi si seteaza URL direct
-  sky.removeAttribute('src');
-  sky.setAttribute('material', '');
-  setTimeout(() => {
-    sky.setAttribute('src', pano.fisier);
-  }, 50);
-
-  // Seteaza initial view
-  const iv = IV[id] || {pitch:0, yaw:0};
-  document.getElementById('cam').setAttribute('rotation', `${-iv.pitch} ${-iv.yaw} 0`);
-
-  activeScene = id;
-  document.getElementById('pano-title').textContent = pano.titlu;
+  const sky=document.getElementById('sky');
+  sky.setAttribute('src', pano.fisier);
+  const iv=IV[id]||{pitch:0,yaw:0};
+  document.getElementById('cam').setAttribute('rotation',`${-iv.pitch} ${-iv.yaw} 0`);
+  activeScene=id;
+  document.getElementById('pano-title').textContent=pano.titlu;
   updateSidebar();
   renderHotspots();
 }
 
-// ===== HOTSPOT-URI A-FRAME =====
 function renderHotspots() {
-  const container = document.getElementById('hotspots');
-  // Sterge hotspot-urile vechi
-  while(container.firstChild) container.removeChild(container.firstChild);
-
-  const hs = HS[activeScene] || [];
-  hs.forEach((h, i) => {
-    const target = panorame.find(p => p.id===h.target);
+  const c=document.getElementById('hotspots');
+  while(c.firstChild) c.removeChild(c.firstChild);
+  const hs=HS[activeScene]||[];
+  hs.forEach(h=>{
+    const target=panorame.find(p=>p.id===h.target);
     if(!target) return;
-
-    const pos = pitchYawToVec(h.pitch, h.yaw, 99);
-    const size = (h.size || 60) / 300; // scala pentru A-Frame
-    const opacity = (h.opacity || 70) / 100;
-
-    const entity = document.createElement('a-entity');
-    entity.setAttribute('position', `${pos.x} ${pos.y} ${pos.z}`);
-
-    if(h.type === 'circle') {
-      // Cerc pe pardoseala - rotit sa stea pe podea
-      // Orientat spre centru sferei
-      const lookAt = `0 0 0`;
-
-      // Ring geometry - arata ca cerc pe podea
-      const ring = document.createElement('a-ring');
-      ring.setAttribute('radius-inner', size * 0.3);
-      ring.setAttribute('radius-outer', size);
-      ring.setAttribute('color', 'white');
-      ring.setAttribute('opacity', opacity);
-      ring.setAttribute('side', 'double');
-      ring.setAttribute('segments-theta', '64');
-      ring.className = 'hotspot-mesh';
-      ring.dataset.target = h.target;
-
-      // Orienta cercul sa priveasca spre centrul sferei (sa stea lipit pe sfera)
-      entity.setAttribute('look-at', lookAt);
-      // Roteste cu 90 grade pe X ca sa stea "culcat" pe suprafata sferica
-      entity.setAttribute('rotation', '0 0 0');
-
-      // Calculeaza rotatia corecta pentru a fi perpendicular pe raza sferei
-      const pitch = h.pitch;
-      const yaw = h.yaw;
-      entity.setAttribute('rotation', `${pitch} ${-yaw} 0`);
-
-      // Al doilea cerc interior
-      const ring2 = document.createElement('a-ring');
-      ring2.setAttribute('radius-inner', 0);
-      ring2.setAttribute('radius-outer', size * 0.25);
-      ring2.setAttribute('color', 'white');
-      ring2.setAttribute('opacity', opacity * 0.6);
-      ring2.setAttribute('side', 'double');
-      ring2.setAttribute('segments-theta', '32');
-      entity.appendChild(ring);
-      entity.appendChild(ring2);
-
+    const pos=pitchYawToPos(h.pitch,h.yaw,95);
+    const sz=(h.size||60)/200;
+    const op=(h.opacity||70)/100;
+    const ent=document.createElement('a-entity');
+    ent.setAttribute('position',`${pos.x} ${pos.y} ${pos.z}`);
+    ent.setAttribute('look-at','#cam');
+    if(h.type==='circle') {
+      const ring=document.createElement('a-ring');
+      ring.setAttribute('radius-inner',sz*0.3);
+      ring.setAttribute('radius-outer',sz);
+      ring.setAttribute('color','white');
+      ring.setAttribute('opacity',op);
+      ring.setAttribute('side','double');
+      ring.setAttribute('segments-theta','64');
+      ring.classList.add('hotspot-mesh');
+      ring.dataset.target=h.target;
+      const ring2=document.createElement('a-circle');
+      ring2.setAttribute('radius',sz*0.25);
+      ring2.setAttribute('color','white');
+      ring2.setAttribute('opacity',op*0.6);
+      ring2.setAttribute('side','double');
+      ent.appendChild(ring);
+      ent.appendChild(ring2);
     } else {
-      // Sageata - verticala, orientata spre centrul sferei
-      const arrow = document.createElement('a-entity');
-      arrow.className = 'hotspot-mesh';
-      arrow.dataset.target = h.target;
-
-      // Corp sageata din geometrie custom
-      const body = document.createElement('a-box');
-      body.setAttribute('width', size * 0.3);
-      body.setAttribute('height', size * 0.6);
-      body.setAttribute('depth', 0.01);
-      body.setAttribute('color', 'white');
-      body.setAttribute('opacity', opacity * 0.4);
-      body.setAttribute('position', `0 ${-size*0.1} 0`);
-
-      const head = document.createElement('a-cone');
-      head.setAttribute('radius-bottom', size * 0.45);
-      head.setAttribute('radius-top', 0);
-      head.setAttribute('height', size * 0.45);
-      head.setAttribute('color', 'white');
-      head.setAttribute('opacity', opacity * 0.7);
-      head.setAttribute('position', `0 ${size*0.35} 0`);
-      head.setAttribute('segments-radial', '8');
-
-      entity.setAttribute('rotation', `${h.pitch} ${-h.yaw} 0`);
-      entity.appendChild(body);
-      entity.appendChild(head);
+      const cone=document.createElement('a-cone');
+      cone.setAttribute('radius-bottom',sz*0.4);
+      cone.setAttribute('radius-top',0);
+      cone.setAttribute('height',sz*0.8);
+      cone.setAttribute('color','white');
+      cone.setAttribute('opacity',op);
+      cone.setAttribute('segments-radial','8');
+      cone.setAttribute('rotation','-90 0 0');
+      cone.classList.add('hotspot-mesh');
+      cone.dataset.target=h.target;
+      ent.appendChild(cone);
     }
-
-    // Click handler
-    entity.addEventListener('click', () => goToScene(h.target));
-
-    // Hover effect
-    entity.addEventListener('mouseenter', () => {
-      entity.querySelectorAll('[color]').forEach(el => {
-        el.setAttribute('color', '#f0a500');
-      });
-    });
-    entity.addEventListener('mouseleave', () => {
-      entity.querySelectorAll('[color]').forEach(el => {
-        el.setAttribute('color', 'white');
-      });
-    });
-
-    container.appendChild(entity);
+    ent.addEventListener('click',()=>goToScene(h.target));
+    ent.addEventListener('mouseenter',()=>ent.querySelectorAll('[color]').forEach(e=>e.setAttribute('color','#f0a500')));
+    ent.addEventListener('mouseleave',()=>ent.querySelectorAll('[color]').forEach(e=>e.setAttribute('color','white')));
+    c.appendChild(ent);
   });
 }
 
-// ===== SIDEBAR =====
 function buildSidebar() {
-  const list = document.getElementById('scene-list');
-  list.innerHTML = '';
-  panorame.forEach(p => {
-    const d = document.createElement('div');
-    d.className = 'si' + (p.id===activeScene?' active':'');
-    d.id = 'si-'+p.id;
-    d.innerHTML = `<div class="dot"></div><span>${p.titlu}</span>`;
-    d.onclick = () => { goToScene(p.id); if(window.innerWidth < 600) toggleSidebar(); };
+  const list=document.getElementById('scene-list');
+  list.innerHTML='';
+  panorame.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='si'+(p.id===activeScene?' active':'');
+    d.id='si-'+p.id;
+    d.innerHTML=`<div class="dot"></div><span>${p.titlu}</span>`;
+    d.onclick=()=>{ goToScene(p.id); if(window.innerWidth<768) toggleSidebar(); };
     list.appendChild(d);
   });
 }
 
 function updateSidebar() {
-  document.querySelectorAll('.si').forEach(e => e.classList.remove('active'));
-  const el = document.getElementById('si-'+activeScene);
-  if(el) { el.classList.add('active'); el.scrollIntoView({block:'nearest'}); }
+  document.querySelectorAll('.si').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('si-'+activeScene);
+  if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}
 }
 
 function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
-  document.getElementById('sidebar').classList.toggle('hidden', !sidebarOpen);
-  document.getElementById('sidebar-toggle').textContent = sidebarOpen ? '◀' : '▶';
+  sidebarOpen=!sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('hidden',!sidebarOpen);
+  document.getElementById('sidebar-toggle').textContent=sidebarOpen?'◀':'▶';
 }
 
-// ===== VR =====
 function enterVR() {
-  const scene = document.getElementById('scene');
-  scene.enterVR();
-  document.getElementById('btn-vr').classList.add('hidden');
+  document.getElementById('scene').enterVR();
+  document.getElementById('btn-vr').classList.remove('show');
   document.getElementById('sidebar').classList.add('hidden');
-  document.getElementById('pano-title').style.display = 'none';
-  isVR = true;
+  document.getElementById('pano-title').style.display='none';
 }
 
-// Detecteaza Quest si intra automat in VR
 function checkVRDevice() {
   if(navigator.xr) {
-    navigator.xr.isSessionSupported('immersive-vr').then(supported => {
-      if(supported) {
-        // Pe Quest - arata butonul VR prominent
-        document.getElementById('btn-vr').style.display = 'flex';
-        // Auto-enter VR dupa 1s pe Quest (user agent check)
-        const isQuest = /OculusBrowser|Quest|VR/.test(navigator.userAgent);
+    navigator.xr.isSessionSupported('immersive-vr').then(ok=>{
+      if(ok) {
+        document.getElementById('btn-vr').classList.add('show');
+        const isQuest=/OculusBrowser|Quest/.test(navigator.userAgent);
         if(isQuest) {
-          // Pe Quest, intra automat in VR la primul click/touch
-          document.addEventListener('click', function autoVR() {
-            document.removeEventListener('click', autoVR);
-            setTimeout(enterVR, 300);
-          }, {once: true});
+          document.addEventListener('click',function autoVR(){
+            document.removeEventListener('click',autoVR);
+            setTimeout(enterVR,500);
+          },{once:true});
         }
-      } else {
-        document.getElementById('btn-vr').classList.add('hidden');
       }
     });
-  } else {
-    document.getElementById('btn-vr').classList.add('hidden');
   }
 }
 
-// La iesire din VR
-document.getElementById('scene').addEventListener('exit-vr', () => {
-  document.getElementById('btn-vr').classList.remove('hidden');
-  document.getElementById('btn-vr').textContent = '🥽 Intră în VR';
+document.getElementById('scene').addEventListener('exit-vr',()=>{
+  document.getElementById('btn-vr').classList.add('show');
   if(sidebarOpen) document.getElementById('sidebar').classList.remove('hidden');
-  document.getElementById('pano-title').style.display = 'block';
-  isVR = false;
+  document.getElementById('pano-title').style.display='block';
 });
 
-// ===== PLAN =====
 function openPlan() {
   document.getElementById('plan-bg').classList.add('open');
   renderPlanDots();
 }
-function closePlan() {
-  document.getElementById('plan-bg').classList.remove('open');
-}
+function closePlan() { document.getElementById('plan-bg').classList.remove('open'); }
 
 function renderPlanDots() {
-  document.querySelectorAll('.pdot').forEach(d => d.remove());
-  const wrap = document.getElementById('plan-wrap');
-  panorame.forEach(p => {
-    const d = document.createElement('div');
-    d.className = 'pdot' + (p.id===activeScene?' active':'');
-    d.style.left = p.px + '%';
-    d.style.top = p.py + '%';
-    d.style.width = p.pm + 'px';
-    d.style.height = p.pm + 'px';
-    d.title = p.titlu;
-    d.innerHTML = `<div class="pdot-label">${p.titlu}</div>`;
-    d.onclick = () => { goToScene(p.id); closePlan(); };
+  document.querySelectorAll('.pdot').forEach(d=>d.remove());
+  const wrap=document.getElementById('plan-wrap');
+  panorame.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='pdot'+(p.id===activeScene?' active':'');
+    d.style.left=p.px+'%'; d.style.top=p.py+'%';
+    d.style.width=p.pm+'px'; d.style.height=p.pm+'px';
+    d.title=p.titlu;
+    d.onclick=()=>{ goToScene(p.id); closePlan(); };
     wrap.appendChild(d);
   });
 }
 
-// ===== INIT =====
-loadData();
+document.getElementById('plan-bg').addEventListener('click',e=>{
+  if(e.target===document.getElementById('plan-bg')) closePlan();
+});
 
-function initApp() {
-  buildSidebar();
+// INIT
+loadData();
+buildSidebar();
+
+document.getElementById('scene').addEventListener('loaded',()=>{
   goToScene('hol01');
   checkVRDevice();
-  if(window.innerWidth < 768) {
-    sidebarOpen = false;
+  if(window.innerWidth<768){
+    sidebarOpen=false;
     document.getElementById('sidebar').classList.add('hidden');
-    document.getElementById('sidebar-toggle').textContent = '▶';
+    document.getElementById('sidebar-toggle').textContent='▶';
   }
-}
-
-const scene = document.getElementById('scene');
-scene.addEventListener('loaded', initApp);
-// Fallback
-setTimeout(() => { if(activeScene==='hol01') initApp(); }, 5000);
-
-// Click pe plan-bg inchide
-document.getElementById('plan-bg').addEventListener('click', e => {
-  if(e.target === document.getElementById('plan-bg')) closePlan();
 });
+
+// Fallback
+setTimeout(()=>{ if(document.getElementById('pano-title').textContent==='Se încarcă...') goToScene('hol01'); },4000);
 </script>
 </body>
 </html>
