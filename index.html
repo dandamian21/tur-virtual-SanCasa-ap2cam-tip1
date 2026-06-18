@@ -170,7 +170,7 @@
 <!-- VIEWER -->
 <div id="viewer-wrap">
   <div id="viewer"></div>
-  <div id="version">v6</div>
+  <div id="version">v7</div>
   <div id="pano-title">Hol-01</div>
   <div id="add-hs-bar">🎯 Click pe ecran unde vrei hotspot-ul</div>
   <div id="iv-bar">👁️ Orientează panorama, apoi apasă "Salvează vedere inițială"</div>
@@ -525,6 +525,31 @@ function startIV() {
 }
 
 // ============ PLAN ============
+let planDrag = { active:false, dot:null, pano:null, sx:0, sy:0, sl:0, st:0, moved:false };
+
+document.addEventListener('mousemove', e=>{
+  if(!planDrag.active) return;
+  const dx=e.clientX-planDrag.sx, dy=e.clientY-planDrag.sy;
+  if(Math.abs(dx)>5||Math.abs(dy)>5) planDrag.moved=true;
+  if(!planDrag.moved) return;
+  const wrap=document.getElementById('plan-img-wrap');
+  const r=wrap.getBoundingClientRect();
+  planDrag.pano.px=Math.max(0,Math.min(100,planDrag.sl+dx/r.width*100));
+  planDrag.pano.py=Math.max(0,Math.min(100,planDrag.st+dy/r.height*100));
+  planDrag.dot.style.left=planDrag.pano.px+'%';
+  planDrag.dot.style.top=planDrag.pano.py+'%';
+});
+
+document.addEventListener('mouseup', e=>{
+  if(!planDrag.active) return;
+  const wasMoved = planDrag.moved;
+  planDrag.active=false; planDrag.moved=false;
+  if(!wasMoved && planDrag.pano) {
+    viewer.loadScene(planDrag.pano.id);
+    closePlan();
+  }
+  planDrag.dot=null; planDrag.pano=null;
+});
 function openPlan() {
   document.getElementById('plan-bg').classList.add('open');
   renderPlanDots();
@@ -547,23 +572,12 @@ function renderPlanDots() {
 }
 
 function enableDotDrag(dot, pano, wrap) {
-  let drag=false, dragged=false, sx,sy,sl,st;
   dot.addEventListener('mousedown',e=>{
-    drag=true; dragged=false; sx=e.clientX; sy=e.clientY; sl=pano.px; st=pano.py;
+    planDrag.active=true; planDrag.moved=false;
+    planDrag.dot=dot; planDrag.pano=pano;
+    planDrag.sx=e.clientX; planDrag.sy=e.clientY;
+    planDrag.sl=pano.px; planDrag.st=pano.py;
     e.preventDefault(); e.stopPropagation();
-  });
-  document.addEventListener('mousemove',e=>{
-    if(!drag)return;
-    const dx=e.clientX-sx, dy=e.clientY-sy;
-    if(Math.abs(dx)>4||Math.abs(dy)>4) dragged=true;
-    const r=wrap.getBoundingClientRect();
-    pano.px=Math.max(0,Math.min(100,sl+dx/r.width*100));
-    pano.py=Math.max(0,Math.min(100,st+dy/r.height*100));
-    dot.style.left=pano.px+'%'; dot.style.top=pano.py+'%';
-  });
-  document.addEventListener('mouseup',e=>{
-    if(drag && !dragged) { viewer.loadScene(pano.id); closePlan(); }
-    drag=false;
   });
   dot.addEventListener('wheel',e=>{
     e.preventDefault();
